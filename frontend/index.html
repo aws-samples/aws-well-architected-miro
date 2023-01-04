@@ -1,151 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://unpkg.com/mirotone/dist/styles.css" />
-    <style>
-      .slider {
-        -webkit-appearance: none;
-        width: 100%;
-        height: 25px;
-        background: #d3d3d3;
-        outline: none;
-        opacity: 0.7;
-        -webkit-transition: 0.2s;
-        transition: opacity 0.2s;
-      }
-
-      .slider:hover {
-        opacity: 1;
-      }
-
-      .slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 25px;
-        height: 25px;
-        background: #04aa6d;
-        cursor: pointer;
-      }
-
-      .slider::-moz-range-thumb {
-        width: 25px;
-        height: 25px;
-        background: #04aa6d;
-        cursor: pointer;
-      }
-      
-      .container {
-        height: 200px;
-        position: relative;
-      }
-      
-      .center {
-        margin: 0;
-        position: relative;
-        left: 50%;
-        top: 45%;
-        -ms-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-      }
-      
-      .root {
-          padding: var(--space-small);
-          display: flex;
-          justify-items: center;
-          flex-direction: column;
-          align-items: stretch;
-      }
-    </style>
-    <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
-  </head>
-  <body style="height:80%">
-    <div class="cs1 ce12" style="padding: var(--space-xsmall); color: var(--light-color)">
-      <div class="tabs" >
-        <div class="tabs-header-list">
-          <div tabindex="0" class="tab tab-active" onclick="openTab(event, 'step-1')">
-            <div class="p-large tab-text tab-badge">Step 1</div>
-          </div>
-          <div tabindex="0" class="tab" onclick="openTab(event, 'step-2')">
-            <div class="p-large tab-text tab-badge">Step 2</div>
-          </div>
-          <div tabindex="0" class="tab" onclick="openTab(event, 'step-3')">
-            <div class="p-large tab-text tab-badge">Step 3</div>
-          </div>
-          <div tabindex="0" class="tab" onclick="openTab(event, 'step-4')">
-            <div class="p-large tab-text tab-badge">Step 4</div>
-          </div>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--        <link rel="stylesheet" href="/src/assets/style.css" />-->
+        <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
+    </head>
+    <body>
+    <div class="grid container">
+        <div class="cs1 ce12">
+<!--            <img src="/src/assets/welcome.png" alt="" />-->
         </div>
-      </div>
-    </div>
-    <div class="grid centered" id="step-1">
-      <div class="cs1 ce12" style="padding: var(--space-small);">
-            <button class="button button-primary" type="button" id="deploy-button">
-              Deploy AWS Stack
-            </button>
-      </div>
-      <div class="cs1 ce12" style="padding: var(--space-small);">
-          <button class="button button-primary" type="button" id="already-deployed-button">
-            Already Deployed
-          </button>
-      </div>
-    </div>
-    <div class="grid centered" id="step-2" style="display:none;">
-      <div class="cs1 ce12">
-        <div class="form-group-small">
-          <input class="input input-small" type="text" placeholder="Enter API URI" id="api-url-input"/>
+        <div class="cs1 ce12">
+            <h1>Great, your app is running locally</h1>
+            <p>
+                You can now create your Developer team to get your app running in
+                Miro.
+            </p>
         </div>
-        <div class="cs1 ce12 centered">
-          <button class="button button-primary" type="button">
-              Submit
-          </button> 
+        <div class="cs1 ce12">
+            <a
+                    class="button button-primary"
+                    href="https://beta.developers.miro.com/docs/create-a-developer-team"
+                    target="_blank"
+            >
+                Create a Developer team
+            </a>
         </div>
-        
-      </div>
     </div>
-    <div class="grid centered" id="step-3" style="display:none;">
-      <div class="cs1 ce12 centered">
-         <button class="button button-primary" type="button">
-          Permissions
-        </button>       
-      </div>
-    </div>
-    <div class="grid centered" id="step-4" style="display:none;">
-      <div class="cs1 ce12" style="padding: var(--space-small);">
-         <button class="button button-primary" type="button">
-          Workflow 1
-        </button>
-    </div>
-     <div class="cs1 ce12" style="padding: var(--space-small);">
-       <button class="button button-primary" type="button">
-          Workflow 2
-        </button>
-    </div>
-    <div class="cs1 ce12" style="padding: var(--space-small);">
-       <button class="button button-primary" type="button">
-          Workflow 3
-        </button>
-    </div>
-    <script>
-      
-      function openTab(event,tabType){
-        tabcontent = document.getElementsByClassName("grid");
-        for (i = 0; i < tabcontent.length; i++) {
-          tabcontent[i].style.display = "none";
-        }
-        
-        tabs = document.getElementsByClassName("tab");
-        for (i = 0; i < tabs.length; i++) {
-          tabs[i].className = tabs[i].className.replace(" tab-active", "");
-        }
-        
-        document.getElementById(tabType).style.display = "flex";
-        event.currentTarget.className += " tab-active";
-      }
-      
-    
-    </script>
-    <script type="module" src="index.js"></script>
-  </body>
+        <script type="module" src="index.js"></script>
+    </body>
 </html>
