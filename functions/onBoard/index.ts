@@ -1,5 +1,5 @@
-import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
-import { SSMClient, PutParameterCommand } from "@aws-sdk/client-ssm";
+import {APIGatewayEvent, APIGatewayProxyResult, Context} from 'aws-lambda';
+import {ParameterType, PutParameterCommand, SSMClient} from "@aws-sdk/client-ssm";
 
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
     // a client can be shared by different commands.
@@ -8,7 +8,7 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     const requestBody = JSON.parse(event.body)
 
     const command = new PutParameterCommand({
-        Name: "miroTeamId", Value: requestBody.team
+        Name: "miroTeamId", Value: requestBody.team, Type: ParameterType.STRING
     });
     await client.send(command);
 
