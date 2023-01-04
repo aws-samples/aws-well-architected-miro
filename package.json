@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prebuild": "rm -rf dist",
-    "build": "esbuild functions/**/*.ts --bundle --minify --platform=node --target=es2020 --outdir=wat_exporter/lambdas --outbase=functions"
+    "prebuild": "rm -rf exporter/functions",
+    "build": "esbuild functions/**/*.ts --bundle --minify --platform=node --target=es2020 --outdir=exporter/functions --outbase=functions"
   },
   "author": "",
   "license": "ISC",
