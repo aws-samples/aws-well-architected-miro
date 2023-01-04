@@ -1,5 +1,5 @@
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
-import {WellArchitectedClient, GetWorkloadCommand, ListWorkloadsCommand} from "@aws-sdk/client-wellarchitected"
+import { WellArchitectedClient, GetWorkloadCommand } from "@aws-sdk/client-wellarchitected"
 
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
     const region = "eu-north-1" // will get it from frontend
@@ -17,7 +17,7 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     return {
         statusCode: 200,
         body: JSON.stringify({
-            workflow: response,
+            workflow: response.Workload,
         }),
      };
   };
