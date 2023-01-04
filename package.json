@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-ssm": "^3.241.0",
+    "@aws-sdk/client-wellarchitected": "^3.241.0",
     "jsonwebtoken": "^9.0.0"
   }
 }
