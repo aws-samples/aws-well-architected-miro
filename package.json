@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prebuild": "rm -rf dist",
-    "build": "esbuild functions/*.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outdir=dist",
-    "postbuild": "cd dist && for f in *.js; do zip \"${f%.*}.zip\" \"$f\"; done"
+    "build": "esbuild functions/**/*.ts --bundle --minify --platform=node --target=es2020 --outdir=wat_exporter/lambdas --outbase=functions"
   },
   "author": "",
   "license": "ISC",
