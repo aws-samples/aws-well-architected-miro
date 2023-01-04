@@ -79,9 +79,9 @@ export class WatExporterStack extends cdk.Stack {
       const rs_wf_list = api_gw.root.addResource('get_wf_list')
       rs_wf_list.addMethod('GET', new aws_apigateway.LambdaIntegration(fn_wf_list))
       //Resource and method to get workflow details
-      const rs_wf = api_gw.root.addResource('get_wf')
-      rs_wf.addMethod('GET', new aws_apigateway.LambdaIntegration(fn_wf))
-      //Resource and method for to onboard user
+      const rs_wf = api_gw.root.addResource('get_wf').addResource('{workloadId}')
+      rs_wf.addMethod('GET',new aws_apigateway.LambdaIntegration(fn_wf))
+      //Resource and method to onboard user
       const rs_user_onboard = api_gw.root.addResource('onboard')
       rs_user_onboard.addMethod('POST', new aws_apigateway.LambdaIntegration(fn_user_onboard))
   }
