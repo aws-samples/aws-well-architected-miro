@@ -8,8 +8,6 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     const command = new ListAnswersCommand({LensAlias, WorkloadId});
     const response: ListAnswersCommandOutput = await client.send(command);
 
-    console.log(`answersListResponse Value: ${JSON.stringify(response, null, 2)}`);
-
     return {
         statusCode: 200,
         body:JSON.stringify( {

@@ -2,8 +2,7 @@ import {APIGatewayEvent, APIGatewayProxyResult, Context} from 'aws-lambda';
 import {ParameterType, PutParameterCommand, SSMClient} from "@aws-sdk/client-ssm";
 
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
-    // a client can be shared by different commands.
-    const region = 'eu-north-1'
+    const region = event.pathParameters.region
     const client = new SSMClient({ region });
     const requestBody = JSON.parse(event.body)
 
@@ -12,8 +11,6 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     });
     await client.send(command);
 
-    console.log(`Event: ${JSON.stringify(event, null, 2)}`);
-    console.log(`Context: ${JSON.stringify(context, null, 2)}`);
     return {
         statusCode: 200,
         body: JSON.stringify({
