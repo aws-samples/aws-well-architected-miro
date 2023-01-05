@@ -35,6 +35,11 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     if (miroTeamFromJwt === parameter.Parameter.Value){
         return {
             statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Headers" : "Content-Type",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+            },
             body: JSON.stringify({
                 message: 'OK'
             }),
@@ -43,6 +48,11 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
 
     return {
         statusCode: 401,
+        headers: {
+            "Access-Control-Allow-Headers" : "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+        },
         body: JSON.stringify({
             message: 'Unauthorized'
         }),
