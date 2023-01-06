@@ -9,9 +9,12 @@ export class WatExporterStack extends cdk.Stack {
       //Get list of the Well-Architected Tool workflows function and permissions to WAT
       const fn_wf_list = new aws_lambda.Function(this, 'WorkflowsListFunction', {
           functionName: 'WorkflowsListFunction',
-          runtime: aws_lambda.Runtime.NODEJS_16_X,
-          code: aws_lambda.Code.fromAsset('functions/getWorkflowList'),
-          handler: 'index.handler'
+          runtime: aws_lambda.Runtime.FROM_IMAGE,
+          architecture: aws_lambda.Architecture.ARM_64,
+          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryArn(this, 'repoWorkflowsList',
+              'arn:aws:ecr:eu-north-1:711697081313:repository/getworkflowlist')),
+          // code: aws_lambda.Code.fromAsset('functions/getWorkflowList'),
+          handler: aws_lambda.Handler.FROM_IMAGE
       })
       fn_wf_list.addToRolePolicy(
           new aws_iam.PolicyStatement({
@@ -23,9 +26,12 @@ export class WatExporterStack extends cdk.Stack {
       //Get Well Architected Tool workflow content function and permissions to WAT
       const fn_wf = new aws_lambda.Function(this, 'WorkflowFunction', {
           functionName: 'WorkflowFunction',
-          runtime: aws_lambda.Runtime.NODEJS_16_X,
-          code: aws_lambda.Code.fromAsset('functions/getWorkflow'),
-          handler: 'index.handler'
+          runtime: aws_lambda.Runtime.FROM_IMAGE,
+          architecture: aws_lambda.Architecture.ARM_64,
+          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryArn(this, 'repoWorkflow',
+              'arn:aws:ecr:eu-north-1:711697081313:repository/getworkflow')),
+          // code: aws_lambda.Code.fromAsset('functions/getWorkflow'),
+          handler: aws_lambda.Handler.FROM_IMAGE
       })
       fn_wf.addToRolePolicy(
           new aws_iam.PolicyStatement({
@@ -37,9 +43,12 @@ export class WatExporterStack extends cdk.Stack {
       //Onboard backend user function and permissions to put parameters to Parameter Store
       const fn_user_onboard = new aws_lambda.Function(this, 'UserOnboardFunction', {
           functionName: 'UserOnboardFunction',
-          runtime: aws_lambda.Runtime.NODEJS_16_X,
-          code: aws_lambda.Code.fromAsset('functions/onBoard'),
-          handler: 'index.handler'
+          runtime: aws_lambda.Runtime.FROM_IMAGE,
+          architecture: aws_lambda.Architecture.ARM_64,
+          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryArn(this, 'repoUserOnboard',
+              'arn:aws:ecr:eu-north-1:711697081313:repository/onboard')),
+          // code: aws_lambda.Code.fromAsset('functions/onBoard'),
+          handler: aws_lambda.Handler.FROM_IMAGE
       })
       fn_user_onboard.addToRolePolicy(
           new aws_iam.PolicyStatement({
@@ -51,9 +60,12 @@ export class WatExporterStack extends cdk.Stack {
       //API GW authorizer function and permissions to get parameters from Parameter Store
       const fn_apigw_auth = new aws_lambda.Function(this, 'APIGWauthFunction', {
           functionName: 'APIGWauthFunction',
-          runtime: aws_lambda.Runtime.NODEJS_16_X,
-          code: aws_lambda.Code.fromAsset('functions/authorize'),
-          handler: 'index.handler'
+          runtime: aws_lambda.Runtime.FROM_IMAGE,
+          architecture: aws_lambda.Architecture.ARM_64,
+          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryArn(this, 'repoApiGwAuth',
+              'arn:aws:ecr:eu-north-1:711697081313:repository/authorize')),
+          // code: aws_lambda.Code.fromAsset('functions/authorize'),
+          handler: aws_lambda.Handler.FROM_IMAGE
       })
       fn_apigw_auth.addToRolePolicy(
           new aws_iam.PolicyStatement({
@@ -106,10 +118,10 @@ export class WatExporterStack extends cdk.Stack {
           }
           })
       rs_user_onboard.addMethod('POST', new aws_apigateway.LambdaIntegration(fn_user_onboard), {
-          authorizationType: aws_apigateway.AuthorizationType.CUSTOM,
-          authorizer: new aws_apigateway.TokenAuthorizer(this, 'WFListAuthorizer', {
-              handler: fn_apigw_auth
-          })
+          // authorizationType: aws_apigateway.AuthorizationType.CUSTOM,
+          // authorizer: new aws_apigateway.TokenAuthorizer(this, 'WFListAuthorizer', {
+          //     handler: fn_apigw_auth
+          // })
       })
       //Resource and method to get answers from WAT workflow
       const rs_answers = rs_region.addResource('get_answers').addResource('{workloadId}').addResource('lens').addResource('{lens}', {
