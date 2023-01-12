@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import {aws_cloudfront, aws_ecr, aws_ecs, aws_iam, aws_s3, CfnOutput} from "aws-cdk-lib";
+import {aws_cloudfront, aws_ecr, aws_iam, aws_s3, CfnOutput} from "aws-cdk-lib";
 
 export class AppHostingStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -25,13 +25,13 @@ export class AppHostingStack extends cdk.Stack {
     }
     )
 
-    //ECR repos for assets
-    const repos_list = ['authorize', 'getworkflow', 'getworkflowlist', 'onboard', 'getanswerslist']
+    //ECR repos for assets (Lambda function containers)
+    const repos_list = ['authorize', 'getworkload', 'getworkloadlist', 'onboard', 'getanswerslist']
     repos_list.forEach( (repo_name) => {
       const repo = new aws_ecr.Repository(this, repo_name, {
         repositoryName: repo_name
       })
-      repo.grantPull(new aws_iam.AccountPrincipal('201316940481'))
+      //repo.grantPull(new aws_iam.AccountPrincipal())
     })
 
 
