@@ -22,7 +22,7 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     });
     const parameter: GetParameterCommandOutput = await client.send(command);
 
-    const jwtToken: string = '';
+    const jwtToken: string = event.headers["bearer"].split(' ')[1];
 
     const jwsDecoded = decode(jwtToken, { complete: true, json: true}) as MiroJwtToken
     const miroTeamFromJwt = jwsDecoded?.payload.team
