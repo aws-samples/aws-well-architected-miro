@@ -16,7 +16,7 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     const Name = 'miroTeamId'
 
     console.log(`event.headers: ${JSON.stringify(event.headers, null, 2)}`);
-    const jwtToken: string = event.headers["bearer"].split(' ')[1];
+    const jwtToken: string = event.headers["Authorization"].split(' ')[1];
 
     const jwsDecoded = decode(jwtToken, { complete: true, json: true}) as MiroJwtToken
     const miroTeamFromJwt = jwsDecoded?.payload.team
