@@ -5,7 +5,9 @@ export const getWorkloadList = async (
 ) => {
     const config = {
         method: 'GET',
-        bearer: `Bearer ${token}`,
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     }
 
     const response = await fetch(`${endpoint}${region}/get_wl_list`, config)
@@ -22,7 +24,9 @@ export const getAnswers = async (
 ) => {
     const config = {
         method: 'GET',
-        bearer: `Bearer ${token}`,
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     }
 
     const response = await fetch(
@@ -41,7 +45,9 @@ export const getWorkload = async (
 ) => {
     const config = {
         method: 'GET',
-        bearer: `Bearer ${token}`,
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     }
 
     const response = await fetch(
@@ -59,7 +65,9 @@ export const onBoard = async (
 ) => {
     const config = {
         method: 'POST',
-        bearer: `Bearer ${token}`,
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     }
 
     const response = await fetch(`${endpoint}${region}/onboard`, config)
