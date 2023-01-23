@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
-import {aws_apigateway, aws_ecr, aws_iam, aws_lambda} from 'aws-cdk-lib';
+import {aws_apigateway, aws_ecr, aws_iam, aws_lambda, Duration} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
+import {AuthorizationType} from "aws-cdk-lib/aws-apigateway";
 
 export class WatExporterStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -10,7 +11,7 @@ export class WatExporterStack extends cdk.Stack {
       const accountId = '711697081313'
       const region = 'eu-north-1'
       //Get list of the Well-Architected Tool workloads function and permissions to WAT
-      const fn_wf_list = new aws_lambda.Function(this, 'WorkloadListFunction', {
+      const fn_wl_list = new aws_lambda.Function(this, 'WorkloadListFunction', {
           functionName: 'WorkloadListFunction',
           runtime: aws_lambda.Runtime.FROM_IMAGE,
           architecture: aws_lambda.Architecture.ARM_64,
@@ -18,15 +19,15 @@ export class WatExporterStack extends cdk.Stack {
               `arn:aws:ecr:${region}:${accountId}:repository/getworkloadlist`)),
           handler: aws_lambda.Handler.FROM_IMAGE
       })
-      fn_wf_list.addToRolePolicy(
+      fn_wl_list.addToRolePolicy(
           new aws_iam.PolicyStatement({
-              actions: ["wellarchitected:*"],
+              actions: ["wellarchitected:*"], //TODO: Replace with fine-grained access control (Get WL list only)
               resources: ['*'],
           })
       )
 
       //Get Well Architected Tool workload content function and permissions to WAT
-      const fn_wf = new aws_lambda.Function(this, 'WorkloadFunction', {
+      const fn_wl = new aws_lambda.Function(this, 'WorkloadFunction', {
           functionName: 'WorkloadFunction',
           runtime: aws_lambda.Runtime.FROM_IMAGE,
           architecture: aws_lambda.Architecture.ARM_64,
@@ -34,7 +35,7 @@ export class WatExporterStack extends cdk.Stack {
               `arn:aws:ecr:${region}:${accountId}:repository/getworkload`)),
           handler: aws_lambda.Handler.FROM_IMAGE
       })
-      fn_wf.addToRolePolicy(
+      fn_wl.addToRolePolicy(
           new aws_iam.PolicyStatement({
               actions: ["wellarchitected:*"], //TODO: Replace with fine-grained access control (Get WL only)
               resources: ['*'],
@@ -95,38 +96,49 @@ export class WatExporterStack extends cdk.Stack {
       })
       //Create API GW root path with region
       const rs_region = api_gw.root.addResource('{region}')
+
+      //Create API GW authorizer for header
+      const authorizer = new aws_apigateway.RequestAuthorizer(this, 'APIGWauthorizer', {
+          handler: fn_apigw_auth,
+          identitySources: [aws_apigateway.IdentitySource.header('Authorization')],
+          resultsCacheTtl: Duration.seconds(0)
+      })
       //Resource and method to get workflows list from Well-Architected Tool
-      const rs_wf_list = rs_region.addResource('get_wl_list', {
+      const rs_wl_list = rs_region.addResource('get_wl_list', {
           defaultCorsPreflightOptions: {
               allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com
           }
       })
-      rs_wf_list.addMethod('GET', new aws_apigateway.LambdaIntegration(fn_wf_list))
+      rs_wl_list.addMethod('GET', new aws_apigateway.LambdaIntegration(fn_wl_list), {
+          authorizationType: AuthorizationType.CUSTOM,
+          authorizer: authorizer
+      })
       //Resource and method to get workflow details
-      const rs_wf = rs_region.addResource('get_wl').addResource('{workloadId}', {
+      const rs_wl = rs_region.addResource('get_wl').addResource('{workloadId}', {
           defaultCorsPreflightOptions: {
               allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com
           }
           })
-      rs_wf.addMethod('GET',new aws_apigateway.LambdaIntegration(fn_wf))
+      rs_wl.addMethod('GET',new aws_apigateway.LambdaIntegration(fn_wl), {
+          authorizationType: AuthorizationType.CUSTOM,
+          authorizer: authorizer
+      })
       //Resource and method to onboard user
       const rs_user_onboard = rs_region.addResource('onboard',{
           defaultCorsPreflightOptions: {
               allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com
           }
           })
-      rs_user_onboard.addMethod('POST', new aws_apigateway.LambdaIntegration(fn_user_onboard), {
-          // authorizationType: aws_apigateway.AuthorizationType.CUSTOM,
-          // authorizer: new aws_apigateway.TokenAuthorizer(this, 'WFListAuthorizer', {
-          //     handler: fn_apigw_auth
-          // })
-      })
+      rs_user_onboard.addMethod('POST', new aws_apigateway.LambdaIntegration(fn_user_onboard))
       //Resource and method to get answers from WAT workflow
       const rs_answers = rs_region.addResource('get_answers').addResource('{workloadId}').addResource('lens').addResource('{lens}', {
           defaultCorsPreflightOptions: {
               allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com
           }
           })
-      rs_answers.addMethod('GET', new aws_apigateway.LambdaIntegration(fn_answers))
+      rs_answers.addMethod('GET', new aws_apigateway.LambdaIntegration(fn_answers), {
+          authorizationType: AuthorizationType.CUSTOM,
+          authorizer: authorizer
+      })
   }
 }

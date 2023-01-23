@@ -1,0 +1,19 @@
+### Get WAT workloads list
+# @name GetWLlist
+GET https://{{endpoint}}/eu-north-1/get_wl_list
+Authorization: token {{token}}
+
+### Get details for the WAT workload
+# @name GetWLdetails
+GET https://{{endpoint}}/eu-north-1/get_wl/51dbee7d651de15ab74e145620e1f34c
+Authorization: token {{token}}
+
+### Get answers for the WAT workload
+# @name GetWLanswers
+GET https://{{endpoint}}/eu-north-1/get_answers/51dbee7d651de15ab74e145620e1f34c/lens/wellarchitected
+Authorization: token {{token}}
+
+### Onboard current workspace to WAT exporter backend
+# @name OnBoard
+POST https://{{endpoint}}/eu-north-1/onboard
+Authorization: token {{token}}
