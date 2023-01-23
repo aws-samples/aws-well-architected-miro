@@ -36,8 +36,8 @@ docker push "${account}.dkr.ecr.${region}.amazonaws.com/onboard"
 rm index.ts
 
 #Force update of Lambda images
-aws lambda update-function-code --function-name AnswersListFunction --image-uri "${account}.dkr.ecr.${region}.amazonaws.com/getanswerslist:latest" 2> /dev/null
-aws lambda update-function-code --function-name WorkloadListFunction --image-uri "${account}.dkr.ecr.${region}.amazonaws.com/getworkloadlist:latest" 2> /dev/null
-aws lambda update-function-code --function-name APIGWauthFunction --image-uri "${account}.dkr.ecr.${region}.amazonaws.com/authorize:latest" 2> /dev/null
-aws lambda update-function-code --function-name UserOnboardFunction --image-uri "${account}.dkr.ecr.${region}.amazonaws.com/onboard:latest" 2> /dev/null
-aws lambda update-function-code --function-name WorkloadFunction --image-uri "${account}.dkr.ecr.${region}.amazonaws.com/getworkload:latest" 2> /dev/null
+aws lambda update-function-code --function-name AnswersListFunction --image-uri "${account}.dkr.ecr.${region}.amazonaws.com/getanswerslist:latest" 2>&1 > /dev/null
+aws lambda update-function-code --function-name WorkloadListFunction --image-uri "${account}.dkr.ecr.${region}.amazonaws.com/getworkloadlist:latest" 2>&1 > /dev/null
+aws lambda update-function-code --function-name APIGWauthFunction --image-uri "${account}.dkr.ecr.${region}.amazonaws.com/authorize:latest" 2>&1 > /dev/null
+aws lambda update-function-code --function-name UserOnboardFunction --image-uri "${account}.dkr.ecr.${region}.amazonaws.com/onboard:latest" 2>&1 > /dev/null
+aws lambda update-function-code --function-name WorkloadFunction --image-uri "${account}.dkr.ecr.${region}.amazonaws.com/getworkload:latest" 2>&1 > /dev/null

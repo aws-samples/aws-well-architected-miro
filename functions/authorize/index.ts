@@ -25,36 +25,35 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     const jwtToken: string = event.headers["Authorization"].split(' ')[1];
 
     const jwsDecoded = decode(jwtToken, { complete: true, json: true}) as MiroJwtToken
-    const miroTeamFromJwt = jwsDecoded?.payload.team
+    const miroTeamFromJwt = JSON.stringify(jwsDecoded?.payload.team, null, 2)
+    const miroTeamFromParameter = JSON.stringify(parameter.Parameter.Value, null, 2)
 
-    console.log(`miroTeamFromJwt: ${JSON.stringify(miroTeamFromJwt, null, 2)}`);
-    console.log(`Parameter Value: ${JSON.stringify(parameter.Parameter.Value, null, 2)}`);
+    console.log(`miroTeamFromJwt: ${miroTeamFromJwt}`);
+    console.log(`Parameter Value: ${miroTeamFromParameter}`);
     console.log(`Event: ${JSON.stringify(event, null, 2)}`);
     console.log(`Context: ${JSON.stringify(context, null, 2)}`);
 
-    if (miroTeamFromJwt === parameter.Parameter.Value){
+    if (miroTeamFromJwt === miroTeamFromParameter){
+        console.log('RESPONSE: Authorized')
         return {
-            statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Headers" : "Content-Type",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-            },
-            body: JSON.stringify({
-                message: 'OK'
-            }),
+            "principalId": "user",
+            "policyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": "execute-api:Invoke",
+                        "Effect": "Allow",
+                        "Resource": event.methodArn
+                    }
+                ]
+            }
         };
-    }
-
+    } else {
+    console.log('RESPONSE: Not authorized')
     return {
         statusCode: 401,
-        headers: {
-            "Access-Control-Allow-Headers" : "Content-Type",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-        },
         body: JSON.stringify({
             message: 'Unauthorized'
         }),
-    }
+    }}
   };
