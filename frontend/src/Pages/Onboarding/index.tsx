@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { RegionSelect } from '../../Components'
 import {
-    WATOOL_DEFAULT_REGION,
     WATOOL_ENDPOINT,
     WATOOL_WORKLOADS_REGION,
     setAppData,
@@ -9,6 +8,12 @@ import {
     getToken,
     validURL,
 } from '../../Services'
+import { useLoaderData } from 'react-router-dom'
+
+interface RegionSelectLoaderData {
+    workloadsRegion: string
+    regionFor: string
+}
 export function OnBoardingPage() {
     const text = `After deployment you need to copy and paste output of the
     deployment inside AWS Stacks. It will contain endpoint on just
@@ -16,9 +21,11 @@ export function OnBoardingPage() {
     Well-Architecture Workloads.`
 
     const errorText = `Please enter valid URL`
+    const { workloadsRegion, regionFor } =
+        useLoaderData() as RegionSelectLoaderData
 
     const [endpoint, setEndpoint] = useState('')
-    const [region, setRegion] = useState(WATOOL_DEFAULT_REGION)
+    const [region, setRegion] = useState(workloadsRegion)
     const [isError, setError] = useState(false)
 
     const saveEndpoint = async () => {
@@ -39,7 +46,11 @@ export function OnBoardingPage() {
 
     return (
         <div className="grid top">
-            <RegionSelect setRegion={setRegion} />
+            <RegionSelect
+                setRegion={setRegion}
+                region={workloadsRegion}
+                regionFor={regionFor}
+            />
             <div className="cs1 ce12 p-medium pdb-1 pdl-0">{text}</div>
             {isError ? (
                 <div className="cs1 ce12 p-medium pdb-1 pdl-0 error-message">

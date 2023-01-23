@@ -23,7 +23,7 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     const getParameter = new GetParameterCommand({Name});
     const storedParameter = await client.send(getParameter);
 
-    if(storedParameter.Parameter.Value === miroTeamFromJwt){
+    if(!storedParameter || storedParameter.Parameter.Value === miroTeamFromJwt){
         const putParameter = new PutParameterCommand({
             Name, Value: miroTeamFromJwt, Type: ParameterType.STRING, Overwrite: true
         });

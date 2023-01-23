@@ -23,9 +23,9 @@ const router = createHashRouter([
         path: '/',
         loader: async () => {
             const watoolEndpoint = await getAppData(WATOOL_ENDPOINT)
-            // if (watoolEndpoint) {
-            //     return redirect('/workloads')
-            // }
+            if (watoolEndpoint) {
+                return redirect('/workloads')
+            }
             return { region: WATOOL_DEPLOYMENT_REGION, regionFor: 'deployment' }
         },
         element: <DeploymentPage />,
@@ -51,12 +51,16 @@ const router = createHashRouter([
                 WATOOL_WORKLOADS_REGION
             )
             const token = await getToken()
-            // const workloadsList = await getWorkloadList(
-            //     watoolEndpoint,
-            //     watoolWorkloadsRegion,
-            //     token
-            // )
-            return {}
+            const workloadsList = await getWorkloadList(
+                watoolEndpoint,
+                watoolWorkloadsRegion,
+                token
+            )
+            return {
+                workloadsList,
+                workloadsRegion: watoolWorkloadsRegion,
+                regionFor: 'Well-Architected Workloads',
+            }
         },
         element: <WorkloadsPage />,
     },
