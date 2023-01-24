@@ -18,8 +18,8 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
         },
-        body: JSON.stringify({
-            workflow: response.Workload,
-        }),
+        body: JSON.stringify(
+          response.Workload,
+        ),
      };
   };
