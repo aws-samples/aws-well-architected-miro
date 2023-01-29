@@ -49,6 +49,12 @@ img {
 .pdl-0 {
   padding-left: 0;
 }
+.mgl-5px {
+  margin-left: 5px;
+}
+.mgr-5px {
+  margin-right: 5px;
+}
 .mgb-1 {
   margin-bottom: 1rem;
 }
@@ -59,4 +65,8 @@ img {
   background: red;
   padding: 1em;
   color: white;
+}
+.watool-header {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xlarge);
 }

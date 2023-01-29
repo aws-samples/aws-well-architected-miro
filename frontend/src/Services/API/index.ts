@@ -1,3 +1,19 @@
+export interface WorkloadsList {
+    WorkloadName: string
+    ImprovementStatus: string
+    Lenses: string[]
+    Owner: string
+    RiskCounts: {
+        NONE: number
+        MEDIUM: number
+        NOT_APPLICABLE: number
+        HIGH: number
+        LOW?: number
+    }
+    UpdatedAt: string
+    WorkloadArn: string
+    WorkloadId: string
+}
 export const getWorkloadList = async (
     endpoint: string,
     region: string,
@@ -10,9 +26,14 @@ export const getWorkloadList = async (
         },
     }
 
-    const response = await fetch(`${endpoint}${region}/get_wl_list`, config)
-    const workloadList = await response.json()
-    return workloadList
+    try {
+        const response = await fetch(`${endpoint}${region}/get_wl_list`, config)
+        const workloadList = await response.json()
+        return workloadList as WorkloadsList[]
+    } catch (e) {
+        console.log(e)
+    }
+    return []
 }
 
 export const getAnswers = async (

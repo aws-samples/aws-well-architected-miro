@@ -48,7 +48,7 @@ export function OnBoardingPage() {
         <div className="grid top">
             <RegionSelect
                 setRegion={setRegion}
-                region={workloadsRegion}
+                initRegion={workloadsRegion}
                 regionFor={regionFor}
             />
             <div className="cs1 ce12 p-medium pdb-1 pdl-0">{text}</div>

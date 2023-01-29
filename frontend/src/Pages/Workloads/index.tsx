@@ -1,38 +1,45 @@
-import React, { useState } from 'react'
-import { useLoaderData } from 'react-router-dom'
-import { RegionSelect } from '../../Components'
+import React from 'react'
+import { useLoaderData, useNavigate } from 'react-router-dom'
+import { Back, WorkloadCard } from '../../Components'
+import { WorkloadsList } from '../../Services'
 
 interface WorkloadsLoaderData {
-    workloadsRegion: string
-    regionFor: string
-    workloadsList?: any[]
+    workloadsList: WorkloadsList[]
+    region: string
 }
-export function WorkloadsPage() {
-    const { workloadsRegion, regionFor, workloadsList } =
-        useLoaderData() as WorkloadsLoaderData
 
-    const [region, setRegion] = useState(workloadsRegion)
-    console.log('workloadsList', workloadsList)
+export const WorkloadsPage = () => {
+    const loaderData = useLoaderData() as WorkloadsLoaderData
+    const workloadsList = loaderData.workloadsList
+    const region = loaderData.region
+    const navigate = useNavigate()
+    const highlightRegion = (region: string) => {
+        return <span style={{ fontWeight: 'bolder' }}>{region}</span>
+    }
 
     return (
         <div className="grid top">
-            <RegionSelect
-                setRegion={setRegion}
-                region={workloadsRegion}
-                regionFor={regionFor}
-            />
-            {workloadsList?.map((workload, index) => (
-                <div key={index} className="cs1 ce12">
-                    {workload.name}
-                </div>
-            ))}
-            {/*<button className="button button-primary cs1 ce12" type="button">*/}
-            {/*    Deploy AWS Stack*/}
-            {/*</button>*/}
-            {/*<button className="button button-primary cs1 ce12" type="button">*/}
-            {/*    {' '}*/}
-            {/*    Already Deployed*/}
-            {/*</button>*/}
+            <Back to="/chooseWorkloads" />
+            <div className="cs1 ce12">
+                This is a list of Well-Architected workloads in your AWS account
+                at {highlightRegion(region)}. You can click on a workload to see
+                more details.
+            </div>
+            {workloadsList.map(
+                ({ WorkloadName, Lenses, RiskCounts, WorkloadId }, index) => (
+                    <div
+                        className="cs1 ce12"
+                        onClick={() => navigate(`/workloads/${WorkloadId}`)}
+                    >
+                        <WorkloadCard
+                            workloadName={WorkloadName}
+                            key={index}
+                            lenses={Lenses}
+                            riskCounts={RiskCounts}
+                        />
+                    </div>
+                )
+            )}
         </div>
     )
 }

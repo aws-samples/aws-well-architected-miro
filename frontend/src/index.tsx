@@ -7,6 +7,7 @@ import {
     OnBoardingPage,
     WorkloadsPage,
     LensesPage,
+    ChooseWorkloadsRegionPage,
 } from './Pages'
 import {
     getAppData,
@@ -15,6 +16,7 @@ import {
     WATOOL_DEFAULT_REGION,
     WATOOL_WORKLOADS_REGION,
     getWorkloadList,
+    getWorkload,
 } from './Services'
 import { getToken } from './Services/App'
 
@@ -24,7 +26,7 @@ const router = createHashRouter([
         loader: async () => {
             const watoolEndpoint = await getAppData(WATOOL_ENDPOINT)
             if (watoolEndpoint) {
-                return redirect('/workloads')
+                return redirect('/chooseWorkloads')
             }
             return { region: WATOOL_DEPLOYMENT_REGION, regionFor: 'deployment' }
         },
@@ -39,6 +41,24 @@ const router = createHashRouter([
             }
         },
         element: <OnBoardingPage />,
+    },
+    {
+        path: 'chooseWorkloads',
+        loader: async () => {
+            const watoolEndpoint: string = await getAppData(WATOOL_ENDPOINT)
+            if (!watoolEndpoint) {
+                return redirect('/')
+            }
+            const watoolWorkloadsRegion: string = await getAppData(
+                WATOOL_WORKLOADS_REGION
+            )
+
+            return {
+                workloadsRegion: watoolWorkloadsRegion,
+                regionFor: 'Well-Architected Workloads',
+            }
+        },
+        element: <ChooseWorkloadsRegionPage />,
     },
     {
         path: 'workloads',
@@ -57,15 +77,38 @@ const router = createHashRouter([
                 token
             )
             return {
+                region: watoolWorkloadsRegion,
                 workloadsList,
-                workloadsRegion: watoolWorkloadsRegion,
-                regionFor: 'Well-Architected Workloads',
             }
         },
         element: <WorkloadsPage />,
     },
     {
         path: 'workloads/:id',
+        loader: async ({ params }) => {
+            const watoolEndpoint: string = await getAppData(WATOOL_ENDPOINT)
+            if (!watoolEndpoint) {
+                return redirect('/')
+            }
+            if (!params.id) {
+                return redirect('/workloads')
+            }
+            const watoolWorkloadsRegion: string = await getAppData(
+                WATOOL_WORKLOADS_REGION
+            )
+            const token = await getToken()
+            const workload = await getWorkload(
+                watoolEndpoint,
+                watoolWorkloadsRegion,
+                token,
+                params.id
+            )
+
+            return {
+                region: watoolWorkloadsRegion,
+                workload,
+            }
+        },
         element: <LensesPage />,
     },
 ])

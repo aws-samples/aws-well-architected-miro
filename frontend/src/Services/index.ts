@@ -11,3 +11,4 @@ export {
 } from './App'
 export { getDeploymentLink } from './Deployment'
 export { validURL } from './Utils'
+export type { WorkloadsList } from './API'
