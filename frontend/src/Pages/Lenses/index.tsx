@@ -1,12 +1,13 @@
-import { Back } from '../../Components'
+import { Back, createAnswerCards, LensCard, Risk } from '../../Components'
 import React from 'react'
 import { useLoaderData } from 'react-router-dom'
-import { LensCard } from '../../Components'
-import { Risk } from '../../Components'
+import { getAnswers } from '../../Services'
 
 interface LensesLoaderData {
     region: string
     workload: Workload
+    endpoint: string
+    token: string
 }
 
 interface Workload {
@@ -18,13 +19,28 @@ interface Workload {
     }
     ReviewOwner: string
     Environment: string
+    WorkloadId: string
 }
 export function LensesPage() {
     const loaderData = useLoaderData() as LensesLoaderData
     const region = loaderData.region
     const workload = loaderData.workload
+    const endpoint = loaderData.endpoint
+    const token = loaderData.token
+
     const highlighter = (string: string) => {
         return <span style={{ fontWeight: 'bolder' }}>{string}</span>
+    }
+
+    const getAnswersForLens = async (lens: string) => {
+        const answers = await getAnswers(
+            endpoint,
+            region,
+            token,
+            workload.WorkloadId,
+            lens
+        )
+        await createAnswerCards(answers)
     }
 
     return (
@@ -59,7 +75,10 @@ export function LensesPage() {
                     You can click on a lens to generate card on your Miro board.
                 </div>
                 {workload.Lenses.map((lens, index) => (
-                    <div className="cs1 ce12">
+                    <div
+                        className="cs1 ce12"
+                        onClick={() => getAnswersForLens(lens)}
+                    >
                         <LensCard lensName={lens} key={index} />
                     </div>
                 ))}

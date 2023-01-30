@@ -107,6 +107,8 @@ const router = createHashRouter([
             return {
                 region: watoolWorkloadsRegion,
                 workload,
+                endpoint: watoolEndpoint,
+                token,
             }
         },
         element: <LensesPage />,

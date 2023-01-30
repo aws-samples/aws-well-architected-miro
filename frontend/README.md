@@ -35,7 +35,7 @@
 │  ├── assets
 │  │  └── style.css
 │  ├── app.tsx      // The code for the app lives here
-│  └── index.ts    // The code for the app entry point lives here
+│  └── index.tsx    // The code for the app entry point lives here
 ├── app.html       // The app itself. It's loaded on the board inside the 'appContainer'
 └── index.html     // The app entry point. This is what you specify in the 'App URL' box in the Miro app settings
 ```
