@@ -1,7 +1,15 @@
 import * as cdk from 'aws-cdk-lib';
-import {aws_apigateway, aws_ecr, aws_iam, aws_lambda, Duration} from 'aws-cdk-lib';
+import {
+    aws_apigateway,
+    aws_cloudfront,
+    aws_cloudfront_origins,
+    aws_ecr,
+    aws_iam,
+    aws_lambda, aws_logs,
+    aws_s3, aws_s3_deployment
+} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
-import {AuthorizationType} from "aws-cdk-lib/aws-apigateway";
+import * as path from 'path';
 
 export class WatExporterStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -10,6 +18,23 @@ export class WatExporterStack extends cdk.Stack {
       //Get AWS account ID and region
       const accountId = '711697081313'
       const region = 'eu-north-1'
+      console.log(`Account is ${this.account}, region is ${this.region}`)
+      //Bucket for assets
+      const assets_bucket = new aws_s3.Bucket(this,'AssetsBucket', {
+          bucketName: 'board-wat-integration-app',
+          autoDeleteObjects: true,
+          removalPolicy: cdk.RemovalPolicy.DESTROY
+      })
+
+/*      const functions: { [index: string]: any; } = {
+          'WorkloadListFunction': 'wellarchitected',
+          'WorkloadFunction': 'wellarchitected',
+          'UserOnboardFunction': 'ssm',
+          'APIGWauthFunction': 'ssm',
+          'AnswersListFunction': 'wellarchitected'
+      } */
+      //TODO: Extract functions and API resources creation, iterate over functions, permissions and resources
+
       //Get list of the Well-Architected Tool workloads function and permissions to WAT
       const fn_wl_list = new aws_lambda.Function(this, 'WorkloadListFunction', {
           functionName: 'WorkloadListFunction',
@@ -92,17 +117,29 @@ export class WatExporterStack extends cdk.Stack {
 
       //API Gateway
       const api_gw = new aws_apigateway.RestApi(this, 'ApiGateway', {
-          restApiName: "BackendGateway"
+          restApiName: "BackendGateway",
+          endpointConfiguration: {types: [aws_apigateway.EndpointType.REGIONAL]},
+          cloudWatchRole: true,
+          deployOptions: { //TODO: remove after debugging
+              loggingLevel: aws_apigateway.MethodLoggingLevel.INFO,
+              dataTraceEnabled: true,
+              accessLogDestination: new aws_apigateway.LogGroupLogDestination(new aws_logs.LogGroup(this, 'AccessLogsBackendAPIGW'))
+          }
       })
       //Create API GW root path with region
-      const rs_region = api_gw.root.addResource('{region}')
+      const rs_region = api_gw.root.addResource('api').addResource('{region}')
+
+      // Test API GW resource and method to troubleshoot CF integration TODO: Delete
+      const rs_test = rs_region.addResource('test')
+      rs_test.addMethod('GET', )
+
 
       //Create API GW authorizer for header
-      const authorizer = new aws_apigateway.RequestAuthorizer(this, 'APIGWauthorizer', {
-          handler: fn_apigw_auth,
-          identitySources: [aws_apigateway.IdentitySource.header('Authorization')],
-          resultsCacheTtl: Duration.seconds(0)
-      })
+      // const authorizer = new aws_apigateway.RequestAuthorizer(this, 'APIGWauthorizer', {
+      //     handler: fn_apigw_auth,
+      //     identitySources: [aws_apigateway.IdentitySource.header('Authorization')],
+      //     resultsCacheTtl: Duration.seconds(0)
+      // })
       //Resource and method to get workflows list from Well-Architected Tool
       const rs_wl_list = rs_region.addResource('get_wl_list', {
           defaultCorsPreflightOptions: {
@@ -110,8 +147,8 @@ export class WatExporterStack extends cdk.Stack {
           }
       })
       rs_wl_list.addMethod('GET', new aws_apigateway.LambdaIntegration(fn_wl_list), {
-          authorizationType: AuthorizationType.CUSTOM,
-          authorizer: authorizer
+          // authorizationType: AuthorizationType.CUSTOM,
+          // authorizer: authorizer
       })
       //Resource and method to get workflow details
       const rs_wl = rs_region.addResource('get_wl').addResource('{workloadId}', {
@@ -120,8 +157,8 @@ export class WatExporterStack extends cdk.Stack {
           }
           })
       rs_wl.addMethod('GET',new aws_apigateway.LambdaIntegration(fn_wl), {
-          authorizationType: AuthorizationType.CUSTOM,
-          authorizer: authorizer
+          // authorizationType: AuthorizationType.CUSTOM,
+          // authorizer: authorizer
       })
       //Resource and method to onboard user
       const rs_user_onboard = rs_region.addResource('onboard',{
@@ -137,8 +174,35 @@ export class WatExporterStack extends cdk.Stack {
           }
           })
       rs_answers.addMethod('GET', new aws_apigateway.LambdaIntegration(fn_answers), {
-          authorizationType: AuthorizationType.CUSTOM,
-          authorizer: authorizer
+          // authorizationType: AuthorizationType.CUSTOM,
+          // authorizer: authorizer
+      })
+
+
+      //CloudFront distribution for assets and API
+      const distribution = new aws_cloudfront.Distribution(this, 'CfDistribution', {
+          logBucket: aws_s3.Bucket.fromBucketName(this, 'CloudFrontLogsBucket', 'board-wat-cf-logs'),
+          defaultBehavior: {
+              origin: new aws_cloudfront_origins.S3Origin(assets_bucket),
+              allowedMethods: aws_cloudfront.AllowedMethods.ALLOW_ALL,
+          },
+          additionalBehaviors: {
+              'api/*': {
+                  origin: new aws_cloudfront_origins.RestApiOrigin(api_gw),
+                  allowedMethods: aws_cloudfront.AllowedMethods.ALLOW_ALL,
+                  }
+          }
+      })
+
+      //Provision data in S3 bucket
+      new aws_s3_deployment.BucketDeployment(this, 'BucketDeployment', {
+          sources: [aws_s3_deployment.Source.asset(path.join(__dirname, '../../frontend/src'))],
+          destinationBucket: assets_bucket
+      })
+
+      new cdk.CfnOutput(this, 'DistributionOutput', {
+          exportName: 'DistributionURL',
+          value: distribution.distributionDomainName
       })
   }
 }
