@@ -6,7 +6,7 @@ import {
     aws_ecr,
     aws_iam,
     aws_lambda, aws_logs,
-    aws_s3, aws_s3_deployment
+    aws_s3, aws_s3_deployment, Duration
 } from 'aws-cdk-lib';
 import {Construct} from 'constructs';
 import * as path from 'path';
@@ -16,9 +16,9 @@ export class WatExporterStack extends cdk.Stack {
     super(scope, id, props);
 
       //Get AWS account ID and region
-      const accountId = '711697081313'
-      const region = 'eu-north-1'
-      console.log(`Account is ${this.account}, region is ${this.region}`)
+      const accountId = '711697081313' //TODO: Replace with this.account, requires fix for Lambdas ECR repo (ARN->Name), as repositoryArn is a late-bound value
+      const region = 'eu-north-1' //TODO: Replace with this.account, requires fix for Lambdas ECR repo (ARN->Name), as repositoryArn is a late-bound value
+
       //Bucket for assets
       const assets_bucket = new aws_s3.Bucket(this,'AssetsBucket', {
           bucketName: 'board-wat-integration-app',
@@ -135,47 +135,47 @@ export class WatExporterStack extends cdk.Stack {
 
 
       //Create API GW authorizer for header
-      // const authorizer = new aws_apigateway.RequestAuthorizer(this, 'APIGWauthorizer', {
-      //     handler: fn_apigw_auth,
-      //     identitySources: [aws_apigateway.IdentitySource.header('Authorization')],
-      //     resultsCacheTtl: Duration.seconds(0)
-      // })
+      const authorizer = new aws_apigateway.RequestAuthorizer(this, 'APIGWauthorizer', {
+          handler: fn_apigw_auth,
+          identitySources: [aws_apigateway.IdentitySource.header('Authorization')],
+          resultsCacheTtl: Duration.seconds(0)
+      })
       //Resource and method to get workflows list from Well-Architected Tool
       const rs_wl_list = rs_region.addResource('get_wl_list', {
           defaultCorsPreflightOptions: {
-              allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com
+              allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com or remove to use Cloudfront
           }
       })
       rs_wl_list.addMethod('GET', new aws_apigateway.LambdaIntegration(fn_wl_list), {
-          // authorizationType: AuthorizationType.CUSTOM,
-          // authorizer: authorizer
+          authorizationType: aws_apigateway.AuthorizationType.CUSTOM,
+          authorizer: authorizer
       })
       //Resource and method to get workflow details
       const rs_wl = rs_region.addResource('get_wl').addResource('{workloadId}', {
           defaultCorsPreflightOptions: {
-              allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com
+              allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com  or remove to use Cloudfront
           }
           })
       rs_wl.addMethod('GET',new aws_apigateway.LambdaIntegration(fn_wl), {
-          // authorizationType: AuthorizationType.CUSTOM,
-          // authorizer: authorizer
+          authorizationType: aws_apigateway.AuthorizationType.CUSTOM,
+          authorizer: authorizer
       })
       //Resource and method to onboard user
       const rs_user_onboard = rs_region.addResource('onboard',{
           defaultCorsPreflightOptions: {
-              allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com
+              allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com  or remove to use Cloudfront
           }
           })
       rs_user_onboard.addMethod('POST', new aws_apigateway.LambdaIntegration(fn_user_onboard))
       //Resource and method to get answers from WAT workflow
       const rs_answers = rs_region.addResource('get_answers').addResource('{workloadId}').addResource('lens').addResource('{lens}', {
           defaultCorsPreflightOptions: {
-              allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com
+              allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com  or remove to use Cloudfront
           }
           })
       rs_answers.addMethod('GET', new aws_apigateway.LambdaIntegration(fn_answers), {
-          // authorizationType: AuthorizationType.CUSTOM,
-          // authorizer: authorizer
+          authorizationType: aws_apigateway.AuthorizationType.CUSTOM,
+          authorizer: authorizer
       })
 
 
@@ -190,6 +190,12 @@ export class WatExporterStack extends cdk.Stack {
               'api/*': {
                   origin: new aws_cloudfront_origins.RestApiOrigin(api_gw),
                   allowedMethods: aws_cloudfront.AllowedMethods.ALLOW_ALL,
+                  cachePolicy: new aws_cloudfront.CachePolicy(this, 'CachePolicy', {
+                      defaultTtl: cdk.Duration.seconds(0),
+                      minTtl: cdk.Duration.seconds(0),
+                      maxTtl: cdk.Duration.seconds(1),
+                      headerBehavior: aws_cloudfront.CacheHeaderBehavior.allowList('Authorization')
+                  })
                   }
           }
       })
