@@ -14,7 +14,7 @@ export const WorkloadCard = ({
     riskCounts,
 }: WorkloadCardProps) => {
     return (
-        <div className="app-card grid">
+        <div className="app-card grid mouse-pointer">
             <h1 className="app-card--title cs1 ce11">{workloadName}</h1>
             <div className="cs1 ce11 grid">
                 <div className="cs1 ce12">
@@ -40,7 +40,7 @@ export const WorkloadCard = ({
                 className="cs12 centered"
                 style={{ gridRowStart: 1, gridRowEnd: 3 }}
             >
-                <image className="icon icon-arrow-right"></image>
+                <image className="icon icon-arrow-right mouse-pointer"></image>
             </div>
         </div>
     )

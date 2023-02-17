@@ -1,52 +1,39 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './assets/style.css'
-import { createHashRouter, RouterProvider, redirect } from 'react-router-dom'
-import {
-    DeploymentPage,
-    OnBoardingPage,
-    WorkloadsPage,
-    LensesPage,
-    ChooseWorkloadsRegionPage,
-} from './Pages'
+import { createHashRouter, redirect, RouterProvider } from 'react-router-dom'
 import {
     getAppData,
-    WATOOL_ENDPOINT,
-    WATOOL_DEPLOYMENT_REGION,
-    WATOOL_DEFAULT_REGION,
-    WATOOL_WORKLOADS_REGION,
-    getWorkloadList,
+    getToken,
     getWorkload,
+    getWorkloadList,
+    WATOOL_IS_AUTHORIZE,
+    WATOOL_WORKLOADS_REGION,
 } from './Services'
-import { getToken } from './Services/App'
+import {
+    ChooseWorkloadsRegionPage,
+    LensesPage,
+    OnBoardingPage,
+    WorkloadsPage,
+} from './Pages'
 
-const router = createHashRouter([
+export const router = createHashRouter([
     {
         path: '/',
         loader: async () => {
-            const watoolEndpoint = await getAppData(WATOOL_ENDPOINT)
-            if (watoolEndpoint) {
+            const isWatoolAuthorize = await getAppData(WATOOL_IS_AUTHORIZE)
+            if (isWatoolAuthorize) {
                 return redirect('/chooseWorkloads')
             }
-            return { region: WATOOL_DEPLOYMENT_REGION, regionFor: 'deployment' }
-        },
-        element: <DeploymentPage />,
-    },
-    {
-        path: 'onboarding',
-        loader: async () => {
-            return {
-                region: WATOOL_DEFAULT_REGION,
-                regionFor: 'Well-Architected Workloads',
-            }
+            return {}
         },
         element: <OnBoardingPage />,
     },
     {
         path: 'chooseWorkloads',
         loader: async () => {
-            const watoolEndpoint: string = await getAppData(WATOOL_ENDPOINT)
-            if (!watoolEndpoint) {
+            const isWatoolAuthorize = await getAppData(WATOOL_IS_AUTHORIZE)
+            if (!isWatoolAuthorize) {
                 return redirect('/')
             }
             const watoolWorkloadsRegion: string = await getAppData(
@@ -55,7 +42,6 @@ const router = createHashRouter([
 
             return {
                 workloadsRegion: watoolWorkloadsRegion,
-                regionFor: 'Well-Architected Workloads',
             }
         },
         element: <ChooseWorkloadsRegionPage />,
@@ -63,16 +49,11 @@ const router = createHashRouter([
     {
         path: 'workloads',
         loader: async () => {
-            const watoolEndpoint: string = await getAppData(WATOOL_ENDPOINT)
-            if (!watoolEndpoint) {
-                return redirect('/')
-            }
             const watoolWorkloadsRegion: string = await getAppData(
                 WATOOL_WORKLOADS_REGION
             )
             const token = await getToken()
             const workloadsList = await getWorkloadList(
-                watoolEndpoint,
                 watoolWorkloadsRegion,
                 token
             )
@@ -86,10 +67,6 @@ const router = createHashRouter([
     {
         path: 'workloads/:id',
         loader: async ({ params }) => {
-            const watoolEndpoint: string = await getAppData(WATOOL_ENDPOINT)
-            if (!watoolEndpoint) {
-                return redirect('/')
-            }
             if (!params.id) {
                 return redirect('/workloads')
             }
@@ -98,7 +75,6 @@ const router = createHashRouter([
             )
             const token = await getToken()
             const workload = await getWorkload(
-                watoolEndpoint,
                 watoolWorkloadsRegion,
                 token,
                 params.id
@@ -107,7 +83,6 @@ const router = createHashRouter([
             return {
                 region: watoolWorkloadsRegion,
                 workload,
-                endpoint: watoolEndpoint,
                 token,
             }
         },

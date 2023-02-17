@@ -6,7 +6,6 @@ import { getAnswers } from '../../Services'
 interface LensesLoaderData {
     region: string
     workload: Workload
-    endpoint: string
     token: string
 }
 
@@ -25,7 +24,6 @@ export function LensesPage() {
     const loaderData = useLoaderData() as LensesLoaderData
     const region = loaderData.region
     const workload = loaderData.workload
-    const endpoint = loaderData.endpoint
     const token = loaderData.token
 
     const highlighter = (string: string) => {
@@ -34,7 +32,6 @@ export function LensesPage() {
 
     const getAnswersForLens = async (lens: string) => {
         const answers = await getAnswers(
-            endpoint,
             region,
             token,
             workload.WorkloadId,
@@ -60,7 +57,7 @@ export function LensesPage() {
                     {highlighter(workload.ReviewOwner)} is the owner of this
                     workload.
                 </div>
-                <div className="cs1 ce12">
+                <div className="cs1 ce12 ">
                     {Object.keys(workload.RiskCounts).map((key, index) => {
                         return (
                             <Risk

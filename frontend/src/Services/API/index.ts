@@ -14,11 +14,7 @@ export interface WorkloadsList {
     WorkloadArn: string
     WorkloadId: string
 }
-export const getWorkloadList = async (
-    endpoint: string,
-    region: string,
-    token: string
-) => {
+export const getWorkloadList = async (region: string, token: string) => {
     const config = {
         method: 'GET',
         headers: {
@@ -26,18 +22,11 @@ export const getWorkloadList = async (
         },
     }
 
-    try {
-        const response = await fetch(`${endpoint}${region}/get_wl_list`, config)
-        const workloadList = await response.json()
-        return workloadList as WorkloadsList[]
-    } catch (e) {
-        console.log(e)
-    }
-    return []
+    const response = await fetch(`/api/${region}/get_wl_list`, config)
+    return await response.json()
 }
 
 export const getAnswers = async (
-    endpoint: string,
     region: string,
     token: string,
     workloadId: string,
@@ -51,15 +40,13 @@ export const getAnswers = async (
     }
 
     const response = await fetch(
-        `${endpoint}${region}/get_answers/${workloadId}/lens/${lens}`,
+        `/api/${region}/get_answers/${workloadId}/lens/${lens}`,
         config
     )
-    const answers = await response.json()
-    return answers
+    return await response.json()
 }
 
 export const getWorkload = async (
-    endpoint: string,
     region: string,
     token: string,
     workloadId: string
@@ -71,19 +58,11 @@ export const getWorkload = async (
         },
     }
 
-    const response = await fetch(
-        `${endpoint}${region}/get_wl/${workloadId}`,
-        config
-    )
-    const workload = await response.json()
-    return workload
+    const response = await fetch(`/api/${region}/get_wl/${workloadId}`, config)
+    return await response.json()
 }
 
-export const onBoard = async (
-    endpoint: string,
-    region: string,
-    token: string
-) => {
+export const onBoard = async (region: string, token: string) => {
     const config = {
         method: 'POST',
         headers: {
@@ -91,7 +70,6 @@ export const onBoard = async (
         },
     }
 
-    const response = await fetch(`${endpoint}${region}/onboard`, config)
-    const status = await response.json()
-    return status
+    const response = await fetch(`/api/${region}/onboard`, config)
+    return await response.json()
 }

@@ -1,16 +1,16 @@
 import React, { useState } from 'react'
 import { RegionSelect } from '../../Components'
-import { useLoaderData, useNavigate } from 'react-router-dom'
+import { useNavigate, useLoaderData } from 'react-router-dom'
 import { setAppData, WATOOL_WORKLOADS_REGION } from '../../Services'
 
 interface WorkloadsLoaderData {
     workloadsRegion: string
-    regionFor: string
 }
 export const ChooseWorkloadsRegionPage = () => {
-    const loaderData = useLoaderData() as WorkloadsLoaderData
     const navigate = useNavigate()
+    const loaderData = useLoaderData() as WorkloadsLoaderData
     const [region, setRegion] = useState(loaderData.workloadsRegion)
+    const regionFor = 'Well-Architected Workloads'
 
     const getNewWorkloads = async () => {
         await setAppData(WATOOL_WORKLOADS_REGION, region)
@@ -20,8 +20,8 @@ export const ChooseWorkloadsRegionPage = () => {
         <div className="grid top">
             <RegionSelect
                 setRegion={setRegion}
-                initRegion={loaderData.workloadsRegion}
-                regionFor={loaderData.regionFor}
+                initRegion={region}
+                regionFor={regionFor}
             />
             <button
                 className="button button-primary cs1 ce12"
