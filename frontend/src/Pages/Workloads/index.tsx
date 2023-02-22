@@ -9,9 +9,7 @@ interface WorkloadsLoaderData {
 }
 
 export const WorkloadsPage = () => {
-    const loaderData = useLoaderData() as WorkloadsLoaderData
-    const workloadsList = loaderData.workloadsList
-    const region = loaderData.region
+    const { region, workloadsList } = useLoaderData() as WorkloadsLoaderData
     const navigate = useNavigate()
     const highlightRegion = (region: string) => {
         return <span style={{ fontWeight: 'bolder' }}>{region}</span>
