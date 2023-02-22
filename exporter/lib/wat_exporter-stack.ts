@@ -182,9 +182,11 @@ export class WatExporterStack extends cdk.Stack {
       //CloudFront distribution for assets and API
       const distribution = new aws_cloudfront.Distribution(this, 'CfDistribution', {
           logBucket: aws_s3.Bucket.fromBucketName(this, 'CloudFrontLogsBucket', 'board-wat-cf-logs'),
+          defaultRootObject: 'index.html',
           defaultBehavior: {
               origin: new aws_cloudfront_origins.S3Origin(assets_bucket),
               allowedMethods: aws_cloudfront.AllowedMethods.ALLOW_ALL,
+              responseHeadersPolicy: aws_cloudfront.ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS
           },
           additionalBehaviors: {
               'api/*': {
