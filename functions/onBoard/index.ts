@@ -13,7 +13,7 @@ interface MiroJwtTokenPayload extends JwtPayload {
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
     const region = event.pathParameters.region
     const client = new SSMClient({ region });
-    const Name = 'miroTeamId'
+    const Name = 'miroTeam'
     const authorizationHeader = event.headers["Authorization"]
     const jwtToken: string = authorizationHeader.split(' ')[1];
 
@@ -23,30 +23,25 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     const getParameter = new GetParameterCommand({Name});
     const storedParameter = await client.send(getParameter);
 
-    if(!storedParameter || storedParameter.Parameter.Value === miroTeamFromJwt){
-        const putParameter = new PutParameterCommand({
-            Name, Value: miroTeamFromJwt, Type: ParameterType.STRING, Overwrite: true
-        });
-        await client.send(putParameter);
+    if(storedParameter.Parameter.Value === miroTeamFromJwt){
         return {
             statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Headers" : "Content-Type",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-            },
             body: JSON.stringify({
                 message: 'OK',
             }),
         };
     }
+
+    if(!storedParameter){
+        const putParameter = new PutParameterCommand({
+            Name, Value: miroTeamFromJwt, Type: ParameterType.STRING, Overwrite: true
+        });
+        await client.send(putParameter);
+
+    }
+
     return {
         statusCode: 401,
-        headers: {
-            "Access-Control-Allow-Headers" : "Content-Type",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-        },
         body: JSON.stringify({
             message: 'Your team is not authorized to use this app.',
         }),

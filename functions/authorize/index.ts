@@ -1,4 +1,4 @@
-import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
+import { Context, APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent } from 'aws-lambda';
 import { SSMClient, GetParameterCommand, GetParameterCommandOutput} from "@aws-sdk/client-ssm";
 import { decode, Jwt, JwtPayload} from "jsonwebtoken";
 
@@ -11,9 +11,9 @@ interface MiroJwtTokenPayload extends JwtPayload {
     "user": string, //ID of the Miro user that the JWT is assigned to
 }  
 
-export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+export const handler = async (event: APIGatewayRequestAuthorizerEvent, context: Context): Promise<APIGatewayAuthorizerResult> => {
     const region = event.pathParameters.region
-    const Name = 'miroTeamId'
+    const Name = 'miroTeam'
 
     const client = new SSMClient({region});
 
@@ -25,35 +25,20 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     const jwtToken: string = event.headers["Authorization"].split(' ')[1];
 
     const jwsDecoded = decode(jwtToken, { complete: true, json: true}) as MiroJwtToken
-    const miroTeamFromJwt = JSON.stringify(jwsDecoded?.payload.team, null, 2)
-    const miroTeamFromParameter = JSON.stringify(parameter.Parameter.Value, null, 2)
+    const miroTeamFromJwt = JSON.stringify(jwsDecoded?.payload.team)
+    const miroTeamFromParameter = JSON.stringify(parameter.Parameter.Value)
 
-    console.log(`miroTeamFromJwt: ${miroTeamFromJwt}`);
-    console.log(`Parameter Value: ${miroTeamFromParameter}`);
-    console.log(`Event: ${JSON.stringify(event, null, 2)}`);
-    console.log(`Context: ${JSON.stringify(context, null, 2)}`);
-
-    if (miroTeamFromJwt === miroTeamFromParameter){
-        console.log('RESPONSE: Authorized')
-        return {
-            "principalId": "user",
-            "policyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [
-                    {
-                        "Action": "execute-api:Invoke",
-                        "Effect": "Allow",
-                        "Resource": event.methodArn
-                    }
-                ]
-            }
-        };
-    } else {
-    console.log('RESPONSE: Not authorized')
     return {
-        statusCode: 401,
-        body: JSON.stringify({
-            message: 'Unauthorized'
-        }),
-    }}
+        "principalId": "user",
+        "policyDocument": {
+        "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Action": "execute-api:Invoke",
+                    "Effect": miroTeamFromJwt === miroTeamFromParameter ? "Allow" : "Deny",
+                    "Resource": event.methodArn
+                }
+            ]
+        }
+    }
   };

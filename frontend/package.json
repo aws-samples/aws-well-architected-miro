@@ -8,8 +8,6 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@aws-amplify/ui-react": "^4.3.2",
-    "aws-amplify": "^5.0.8",
     "mirotone": "3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
