@@ -12,7 +12,6 @@ export class AppHostingStack extends cdk.Stack {
       const repo = new aws_ecr.Repository(this, repo_name, {
         repositoryName: repo_name.toLowerCase()
       })
-      //repo.grantPull(new aws_iam.AccountPrincipal())
     })
 
   }

@@ -5,7 +5,7 @@ import {
     aws_cloudfront_origins,
     aws_ecr,
     aws_iam,
-    aws_lambda, aws_logs,
+    aws_lambda,
     aws_s3, aws_s3_deployment, Duration
 } from 'aws-cdk-lib';
 import {Construct} from 'constructs';
@@ -15,10 +15,6 @@ export class WatExporterStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-      //Get AWS account ID and region
-      const accountId = '711697081313' //TODO: Replace with this.account, requires fix for Lambdas ECR repo (ARN->Name), as repositoryArn is a late-bound value
-      const region = 'eu-north-1' //TODO: Replace with this.account, requires fix for Lambdas ECR repo (ARN->Name), as repositoryArn is a late-bound value
-
       //Bucket for assets
       const assets_bucket = new aws_s3.Bucket(this,'AssetsBucket', {
           bucketName: 'board-wat-integration-app',
@@ -26,27 +22,25 @@ export class WatExporterStack extends cdk.Stack {
           removalPolicy: cdk.RemovalPolicy.DESTROY
       })
 
-/*      const functions: { [index: string]: any; } = {
-          'WorkloadListFunction': 'wellarchitected',
-          'WorkloadFunction': 'wellarchitected',
-          'UserOnboardFunction': 'ssm',
-          'APIGWauthFunction': 'ssm',
-          'AnswersListFunction': 'wellarchitected'
-      } */
-      //TODO: Extract functions and API resources creation, iterate over functions, permissions and resources
+	  //Provision data in assets S3 bucket
+	  new aws_s3_deployment.BucketDeployment(this, 'BucketDeployment', {
+		  sources: [aws_s3_deployment.Source.asset(path.join(__dirname, '../../frontend/src'))],
+		  destinationBucket: assets_bucket
+	  })
+
+      //TODO: Extract functions and API resources from single data source, iterate over functions, permissions and resources
 
       //Get list of the Well-Architected Tool workloads function and permissions to WAT
       const fn_wl_list = new aws_lambda.Function(this, 'WorkloadListFunction', {
           functionName: 'WorkloadListFunction',
           runtime: aws_lambda.Runtime.FROM_IMAGE,
           architecture: aws_lambda.Architecture.ARM_64,
-          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryArn(this, 'repoWorkloadList',
-              `arn:aws:ecr:${region}:${accountId}:repository/getworkloadlist`)),
+          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryName(this, 'repoWorkloadList', `getworkloadlist`)),
           handler: aws_lambda.Handler.FROM_IMAGE
       })
       fn_wl_list.addToRolePolicy(
           new aws_iam.PolicyStatement({
-              actions: ["wellarchitected:*"], //TODO: Replace with fine-grained access control (Get WL list only)
+              actions: ["wellarchitected:ListWorkloads"],
               resources: ['*'],
           })
       )
@@ -56,30 +50,28 @@ export class WatExporterStack extends cdk.Stack {
           functionName: 'WorkloadFunction',
           runtime: aws_lambda.Runtime.FROM_IMAGE,
           architecture: aws_lambda.Architecture.ARM_64,
-          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryArn(this, 'repoWorkload',
-              `arn:aws:ecr:${region}:${accountId}:repository/getworkload`)),
+          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryName(this, 'repoWorkload', `getworkload`)),
           handler: aws_lambda.Handler.FROM_IMAGE
       })
       fn_wl.addToRolePolicy(
           new aws_iam.PolicyStatement({
-              actions: ["wellarchitected:*"], //TODO: Replace with fine-grained access control (Get WL only)
+              actions: ["wellarchitected:GetWorkload"],
               resources: ['*'],
           })
       )
 
-      //Onboard backend user function and permissions to put parameters to Parameter Store
+      //Onboard backend user function and permissions to put parameters to Systems Manager Parameter Store
       const fn_user_onboard = new aws_lambda.Function(this, 'UserOnboardFunction', {
           functionName: 'UserOnboardFunction',
           runtime: aws_lambda.Runtime.FROM_IMAGE,
           architecture: aws_lambda.Architecture.ARM_64,
-          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryArn(this, 'repoUserOnboard',
-              `arn:aws:ecr:${region}:${accountId}:repository/onboard`)),
+          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryName(this, 'repoUserOnboard', `onboard`)),
           handler: aws_lambda.Handler.FROM_IMAGE
       })
       fn_user_onboard.addToRolePolicy(
           new aws_iam.PolicyStatement({
-              actions: ["ssm:*"], //TODO: Replace with fine-grained access to PutParameter only after tests
-              resources: ['*'],
+              actions: ["ssm:PutParameter"],
+              resources: ['*'], //TODO: Replace with fine-grained access to particular parameter
           })
       )
 
@@ -88,14 +80,13 @@ export class WatExporterStack extends cdk.Stack {
           functionName: 'APIGWauthFunction',
           runtime: aws_lambda.Runtime.FROM_IMAGE,
           architecture: aws_lambda.Architecture.ARM_64,
-          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryArn(this, 'repoApiGwAuth',
-              `arn:aws:ecr:${region}:${accountId}:repository/authorize`)),
+          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryName(this, 'repoApiGwAuth', `authorize`)),
           handler: aws_lambda.Handler.FROM_IMAGE
       })
       fn_apigw_auth.addToRolePolicy(
           new aws_iam.PolicyStatement({
-              actions: ["ssm:*"], //TODO: Replace with fine-grained access to GetParameter only after tests
-              resources: ['*'],
+              actions: ["ssm:GetParameter"],
+              resources: ['*'], //TODO: Replace with fine-grained access to particular parameter
           })
       )
 
@@ -104,13 +95,12 @@ export class WatExporterStack extends cdk.Stack {
           functionName: 'AnswersListFunction',
           runtime: aws_lambda.Runtime.FROM_IMAGE,
           architecture: aws_lambda.Architecture.ARM_64,
-          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryArn(this, 'repoAnswers',
-              `arn:aws:ecr:${region}:${accountId}:repository/getanswerslist`)),
+          code: aws_lambda.Code.fromEcrImage(aws_ecr.Repository.fromRepositoryName(this, 'repoAnswers', `getanswerslist`)),
           handler: aws_lambda.Handler.FROM_IMAGE
       })
       fn_answers.addToRolePolicy(
           new aws_iam.PolicyStatement({
-              actions: ["wellarchitected:*"], //TODO: Replace with fine-grained access control (Get WL only)
+              actions: ["wellarchitected:GetAnswer"],
               resources: ['*'],
           })
       )
@@ -118,21 +108,10 @@ export class WatExporterStack extends cdk.Stack {
       //API Gateway
       const api_gw = new aws_apigateway.RestApi(this, 'ApiGateway', {
           restApiName: "BackendGateway",
-          endpointConfiguration: {types: [aws_apigateway.EndpointType.REGIONAL]},
-          cloudWatchRole: true,
-          deployOptions: { //TODO: remove after debugging
-              loggingLevel: aws_apigateway.MethodLoggingLevel.INFO,
-              dataTraceEnabled: true,
-              accessLogDestination: new aws_apigateway.LogGroupLogDestination(new aws_logs.LogGroup(this, 'AccessLogsBackendAPIGW'))
-          }
+          endpointConfiguration: {types: [aws_apigateway.EndpointType.REGIONAL]}
       })
       //Create API GW root path with region
       const rs_region = api_gw.root.addResource('api').addResource('{region}')
-
-      // Test API GW resource and method to troubleshoot CF integration TODO: Delete
-      const rs_test = rs_region.addResource('test')
-      rs_test.addMethod('GET', )
-
 
       //Create API GW authorizer for header
       const authorizer = new aws_apigateway.RequestAuthorizer(this, 'APIGWauthorizer', {
@@ -140,39 +119,24 @@ export class WatExporterStack extends cdk.Stack {
           identitySources: [aws_apigateway.IdentitySource.header('Authorization')],
           resultsCacheTtl: Duration.seconds(0)
       })
+
       //Resource and method to get workflows list from Well-Architected Tool
-      const rs_wl_list = rs_region.addResource('get_wl_list', {
-          defaultCorsPreflightOptions: {
-              allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com or remove to use Cloudfront
-          }
-      })
+      const rs_wl_list = rs_region.addResource('get_wl_list')
       rs_wl_list.addMethod('GET', new aws_apigateway.LambdaIntegration(fn_wl_list), {
           authorizationType: aws_apigateway.AuthorizationType.CUSTOM,
           authorizer: authorizer
       })
       //Resource and method to get workflow details
-      const rs_wl = rs_region.addResource('get_wl').addResource('{workloadId}', {
-          defaultCorsPreflightOptions: {
-              allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com  or remove to use Cloudfront
-          }
-          })
+      const rs_wl = rs_region.addResource('get_wl').addResource('{workloadId}')
       rs_wl.addMethod('GET',new aws_apigateway.LambdaIntegration(fn_wl), {
           authorizationType: aws_apigateway.AuthorizationType.CUSTOM,
           authorizer: authorizer
       })
       //Resource and method to onboard user
-      const rs_user_onboard = rs_region.addResource('onboard',{
-          defaultCorsPreflightOptions: {
-              allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com  or remove to use Cloudfront
-          }
-          })
+      const rs_user_onboard = rs_region.addResource('onboard')
       rs_user_onboard.addMethod('POST', new aws_apigateway.LambdaIntegration(fn_user_onboard))
       //Resource and method to get answers from WAT workflow
-      const rs_answers = rs_region.addResource('get_answers').addResource('{workloadId}').addResource('lens').addResource('{lens}', {
-          defaultCorsPreflightOptions: {
-              allowOrigins: aws_apigateway.Cors.ALL_ORIGINS, //TODO: Define proper origins list, like miro.com  or remove to use Cloudfront
-          }
-          })
+      const rs_answers = rs_region.addResource('get_answers').addResource('{workloadId}').addResource('lens').addResource('{lens}')
       rs_answers.addMethod('GET', new aws_apigateway.LambdaIntegration(fn_answers), {
           authorizationType: aws_apigateway.AuthorizationType.CUSTOM,
           authorizer: authorizer
@@ -200,12 +164,6 @@ export class WatExporterStack extends cdk.Stack {
                   })
                   }
           }
-      })
-
-      //Provision data in S3 bucket
-      new aws_s3_deployment.BucketDeployment(this, 'BucketDeployment', {
-          sources: [aws_s3_deployment.Source.asset(path.join(__dirname, '../../frontend/src'))],
-          destinationBucket: assets_bucket
       })
 
       new cdk.CfnOutput(this, 'DistributionOutput', {
