@@ -5,7 +5,7 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
 
     const region = event.pathParameters.region
 
-    const client = new WellArchitectedClient({ region });
+    const client = new WellArchitectedClient({ region, customUserAgent: 'APN_1808755' });
     const command = new ListWorkloadsCommand({});
     const response = await client.send(command);
 
