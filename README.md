@@ -28,7 +28,20 @@ AnswersList | 	Typescript |	Provides list of Answers related to Lens.
 ### Deployment
 
 To begin integrating WATool with the Miro application, follow these steps to deploy it in your AWS account:
-TBD
+
+1. Install AWS CLI and AWS CDK if needed
+2. Configure CLI access to AWS account via profile or environment variables
+3. Export AWS_REGION environment variable, as Lambda function deployment script relies on that
+4. Deploy Lambdas hosting CDK stack to the target account:
+- Navigate to "project_root/cdk/hosting" folder
+- Run "cdk deploy --require-approval never"
+5. Build and push Lambda functions images to ECR:
+- Navigate to "project_root/cdk/docker" folder
+- Run "./ecr_login_build_push.sh" script
+6. Deploy WAT exporter CDK stack to the target account:
+- Navigate to "project_root/cdk/exporter" folder
+- Run "cdk deploy --require-approval never"
+
 
 ### Miro Application
 1. Familiarize yourself with Miro's Developer Platform:

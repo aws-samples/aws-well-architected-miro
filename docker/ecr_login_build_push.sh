@@ -1,6 +1,6 @@
 #!/bin/bash
-account="711697081313"
-region="eu-north-1"
+account=$(aws sts get-caller-identity --query "Account" --output text)
+region=$AWS_REGION
 #Log in to ECR repo
 aws ecr get-login-password --region "${region}" | docker login --username AWS --password-stdin "${account}.dkr.ecr.${region}.amazonaws.com"
 

@@ -17,14 +17,13 @@ export class WatExporterStack extends cdk.Stack {
 
       //Bucket for assets
       const assets_bucket = new aws_s3.Bucket(this,'AssetsBucket', {
-          bucketName: 'board-wat-integration-app',
           autoDeleteObjects: true,
           removalPolicy: cdk.RemovalPolicy.DESTROY
       })
 
 	  //Provision data in assets S3 bucket
 	  new aws_s3_deployment.BucketDeployment(this, 'BucketDeployment', {
-		  sources: [aws_s3_deployment.Source.asset(path.join(__dirname, '../../frontend/src'))],
+		  sources: [aws_s3_deployment.Source.asset(path.join(__dirname, '../../frontend/dist'))],
 		  destinationBucket: assets_bucket
 	  })
 
