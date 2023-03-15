@@ -1,0 +1,42 @@
+####################### TESTS FOR API GW #######################
+
+### Get WAT workloads list with API GW
+# @name GetWLlistApi
+GET https://{{api_gw}}/{{api_gw_stage}}/eu-north-1/get_wl_list
+
+### Get details for the WAT workload with API GW
+# @name GetWLdetailsApi
+GET https://{{api_gw}}/{{api_gw_stage}}/eu-north-1/get_wl/51dbee7d651de15ab74e145620e1f34c
+Authorization: Bearer: {{token}}
+
+### Get answers for the WAT workload with API GW
+# @name GetWLanswersApi
+GET https://{{api_gw}}/{{api_gw_stage}}/eu-north-1/get_answers/51dbee7d651de15ab74e145620e1f34c/lens/wellarchitected
+Authorization: Bearer: {{token}}
+
+### Onboard current workspace to WAT exporter backend with API GW
+# @name OnBoardApi
+POST https://{{api_gw}}/{{api_gw_stage}}/eu-north-1/onboard
+Authorization: Bearer: {{token}}
+
+####################### TESTS FOR CloudFront #######################
+
+### Get WAT workloads list with API GW
+# @name GetWLlistCF
+GET https://{{cloudfront}}/{{cloudfront_api_behavior}}/eu-north-1/get_wl_list
+Authorization: Bearer: {{token}}
+
+### Get details for the WAT workload with API GW
+# @name GetWLdetails
+GET https://{{cloudfront}}/{{cloudfront_api_behavior}}/eu-north-1/get_wl/51dbee7d651de15ab74e145620e1f34c
+Authorization: Bearer: {{token}}
+
+### Get answers for the WAT workload with API GW
+# @name GetWLanswers
+GET https://{{cloudfront}}/{{cloudfront_api_behavior}}/eu-north-1/get_answers/51dbee7d651de15ab74e145620e1f34c/lens/wellarchitected
+Authorization: Bearer: {{token}}
+
+### Onboard current workspace to WAT exporter backend with API GW
+# @name OnBoard
+POST https://{{cloudfront}}/{{cloudfront_api_behavior}}/eu-north-1/onboard
+Authorization: Bearer: {{token}}
