@@ -10,7 +10,8 @@ export class AppHostingStack extends cdk.Stack {
     const repos_list = ['authorize', 'getWorkload', 'getWorkloadList', 'onboard', 'getAnswerslist']
     repos_list.forEach( (repo_name) => {
       const repo = new aws_ecr.Repository(this, repo_name, {
-        repositoryName: repo_name.toLowerCase()
+		  repositoryName: repo_name.toLowerCase(),
+		  removalPolicy: cdk.RemovalPolicy.DESTROY
       })
     })
 
