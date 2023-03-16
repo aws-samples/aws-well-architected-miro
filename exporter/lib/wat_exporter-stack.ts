@@ -69,7 +69,7 @@ export class WatExporterStack extends cdk.Stack {
       })
       fn_user_onboard.addToRolePolicy(
           new aws_iam.PolicyStatement({
-              actions: ["ssm:PutParameter"],
+              actions: ["ssm:PutParameter", "ssm:GetParameter"],
               resources: ['*'], //TODO: Replace with fine-grained access to particular parameter
           })
       )
