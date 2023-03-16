@@ -1,3 +1,5 @@
+import { WATOOL_DEFAULT_REGION } from '../'
+
 export interface WorkloadsList {
     WorkloadName: string
     ImprovementStatus: string
@@ -62,7 +64,8 @@ export const getWorkload = async (
     return await response.json()
 }
 
-export const onBoard = async (region: string, token: string) => {
+export const onBoard = async (token: string) => {
+    const region = WATOOL_DEFAULT_REGION
     const config = {
         method: 'POST',
         headers: {

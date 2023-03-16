@@ -11,7 +11,7 @@ interface MiroJwtTokenPayload extends JwtPayload {
     "user": string, //ID of the Miro user that the JWT is assigned to
 }
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
-    const region = event.pathParameters.region
+    const region = process.env.AWS_REGION
     const client = new SSMClient({ region });
     const Name = 'miroTeam'
     const authorizationHeader = event.headers["Authorization"]

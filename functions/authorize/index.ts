@@ -12,7 +12,7 @@ interface MiroJwtTokenPayload extends JwtPayload {
 }  
 
 export const handler = async (event: APIGatewayRequestAuthorizerEvent, context: Context): Promise<APIGatewayAuthorizerResult> => {
-    const region = event.pathParameters.region
+    const region = process.env.AWS_REGION
     const Name = 'miroTeam'
 
     const client = new SSMClient({region});

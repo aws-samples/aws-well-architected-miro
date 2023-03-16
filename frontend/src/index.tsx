@@ -9,6 +9,7 @@ import {
     getWorkloadList,
     WATOOL_IS_AUTHORIZE,
     WATOOL_WORKLOADS_REGION,
+    WATOOL_DEFAULT_REGION,
 } from './Services'
 import {
     ChooseWorkloadsRegionPage,
@@ -40,8 +41,11 @@ export const router = createHashRouter([
                 WATOOL_WORKLOADS_REGION
             )
 
+            const workloadsRegion =
+                watoolWorkloadsRegion || WATOOL_DEFAULT_REGION
+
             return {
-                workloadsRegion: watoolWorkloadsRegion,
+                workloadsRegion,
             }
         },
         element: <ChooseWorkloadsRegionPage />,
