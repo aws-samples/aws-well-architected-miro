@@ -99,7 +99,7 @@ export class WatExporterStack extends cdk.Stack {
       })
       fn_answers.addToRolePolicy(
           new aws_iam.PolicyStatement({
-              actions: ["wellarchitected:GetAnswer"],
+              actions: ["wellarchitected:GetAnswer", "wellarchitected:ListAnswers"],
               resources: ['*'],
           })
       )
