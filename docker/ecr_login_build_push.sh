@@ -6,31 +6,31 @@ aws ecr get-login-password --region "${region}" | docker login --username AWS --
 
 #Build and push Lambda containers to ECR
 cp ../functions/authorize/index.ts .
-docker build -t authorize .
+docker buildx build --platform=linux/arm64 -t authorize .
 docker tag authorize "${account}.dkr.ecr.${region}.amazonaws.com/authorize"
 docker push "${account}.dkr.ecr.${region}.amazonaws.com/authorize"
 rm index.ts
 
 cp ../functions/getAnswersList/index.ts .
-docker build -t getanswerslist .
+docker buildx build --platform=linux/arm64 -t getanswerslist .
 docker tag getanswerslist "${account}.dkr.ecr.${region}.amazonaws.com/getanswerslist"
 docker push "${account}.dkr.ecr.${region}.amazonaws.com/getanswerslist"
 rm index.ts
 
 cp ../functions/getWorkload/index.ts .
-docker build -t getworkload .
+docker buildx build --platform=linux/arm64 -t getworkload .
 docker tag getworkload "${account}.dkr.ecr.${region}.amazonaws.com/getworkload"
 docker push "${account}.dkr.ecr.${region}.amazonaws.com/getworkload"
 rm index.ts
 
 cp ../functions/getWorkloadList/index.ts .
-docker build -t getworkloadlist .
+docker buildx build --platform=linux/arm64 -t getworkloadlist .
 docker tag getworkloadlist "${account}.dkr.ecr.${region}.amazonaws.com/getworkloadlist"
 docker push "${account}.dkr.ecr.${region}.amazonaws.com/getworkloadlist"
 rm index.ts
 
 cp ../functions/onBoard/index.ts .
-docker build -t onboard .
+docker buildx build --platform=linux/arm64 -t onboard .
 docker tag onboard "${account}.dkr.ecr.${region}.amazonaws.com/onboard"
 docker push "${account}.dkr.ecr.${region}.amazonaws.com/onboard"
 rm index.ts
