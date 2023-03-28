@@ -31,16 +31,17 @@ To begin integrating WATool with the Miro application, follow these steps to dep
 
 1. Install AWS CLI and AWS CDK if needed
 2. Configure CLI access to AWS account via profile or environment variables
-3. Export AWS_REGION environment variable, as Lambda function deployment script relies on that
-4. Deploy Lambdas hosting CDK stack to the target account:
-- Navigate to "project_root/cdk/hosting" folder
-- Run "cdk deploy --require-approval never"
-5. Build and push Lambda functions images to ECR:
-- Navigate to "project_root/cdk/docker" folder
-- Run "./ecr_login_build_push.sh" script
-6. Deploy WAT exporter CDK stack to the target account:
-- Navigate to "project_root/cdk/exporter" folder
-- Run "cdk deploy --require-approval never"
+3. Export AWS_REGION environment variable by run `export AWS_REGION='your region here'`, as Lambda function deployment script relies on that
+4. Bootstrap CDK stack in the target account: `cdk bootstrap aws://<account_id>/<region>`
+5. Deploy Lambdas hosting CDK stack to the target account:
+   - Navigate to `project_root/cdk/hosting` folder
+   - Run `cdk deploy --require-approval never`
+6. Build and push Lambda functions images to ECR:
+   - Navigate to `project_root/cdk/docker` folder
+   - Run `./ecr_login_build_push.sh` script
+7. Deploy WAT exporter CDK stack to the target account:
+   - Navigate to `project_root/cdk/exporter` folder
+   - Run `cdk deploy --require-approval never`
 
 
 ### Miro Application
