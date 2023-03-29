@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "prebuild": "rm -rf exporter/functions",
-    "build": "esbuild functions/**/*.ts --bundle --minify --platform=node --target=es2020 --outdir=exporter/functions --outbase=functions"
+    "build": "(esbuild functions/**/*.ts --bundle --minify --platform=node --target=es2020 --outdir=exporter/functions --outbase=functions)",
+    "predeploy": "(cd frontend && npm install && npm run build) && (cd hosting && npm install) && (cd exporter && npm install)",
+    "deploy": "(cd hosting && npm run deploy) && (cd docker && npm run deploy) && (cd exporter && npm run deploy)"
   },
   "author": "",
   "license": "ISC",
