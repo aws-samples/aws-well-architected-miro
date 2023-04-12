@@ -29,20 +29,21 @@ AnswersList | 	Typescript |	Provides list of Answers related to Lens.
 
 To begin integrating WATool with the Miro application, follow these steps to deploy it in your AWS account:
 
-1. Install AWS CLI and AWS CDK if needed
+1. Install AWS CLI, NodeJS, NPM and AWS CDK if needed
 2. Configure CLI access to AWS account via profile or environment variables
-3. Export AWS_REGION environment variable by run `export AWS_REGION='your region here'`, as Lambda function deployment script relies on that
+3. Export AWS_REGION environment variable by run `export AWS_REGION='your region here'` (i.e. `export AWS_REGION='eu-north-1'`), as Lambda function deployment script relies on that
 4. Bootstrap CDK stack in the target account: `cdk bootstrap aws://<account_id>/<region>`
-5. Deploy Lambdas hosting CDK stack to the target account:
-   - Navigate to `project_root/cdk/hosting` folder
-   - Run `cdk deploy --require-approval never`
-6. Build and push Lambda functions images to ECR:
-   - Navigate to `project_root/cdk/docker` folder
-   - Run `./ecr_login_build_push.sh` script
-7. Deploy WAT exporter CDK stack to the target account:
-   - Navigate to `project_root/cdk/exporter` folder
-   - Run `cdk deploy --require-approval never`
-
+5. For easy deployment just run `npm run deploy` from the project root folder. This will deploy all the necessary stacks in the target account. 
+6. If you want to deploy the stacks separately, follow the steps below:
+   a. Deploy Lambdas hosting CDK stack to the target account:
+      - Navigate to `project_root/cdk/hosting` folder
+      - Run `cdk deploy --require-approval never`
+   b. Build and push Lambda functions images to ECR:
+      - Navigate to `project_root/cdk/docker` folder
+      - Run `./ecr_login_build_push.sh` script
+   c. Deploy WAT exporter CDK stack to the target account:
+      - Navigate to `project_root/cdk/exporter` folder
+      - Run `cdk deploy --require-approval never`
 
 ### Miro Application
 1. Familiarize yourself with Miro's Developer Platform:

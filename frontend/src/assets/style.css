@@ -67,10 +67,39 @@ img {
 .mouse-pointer {
   cursor: pointer;
 }
+
+.mouse-pointer:hover {
+  background-color: rgba(181, 186, 181, 0.1);
+}
+
+.mouse-pointer:active {
+  background-color: rgba(181, 186, 181, 0.2);
+  transform: translateY(1px);
+}
 .watool-loader {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.3);
+}
+
+.truncate {
+  width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 1);
+  z-index: 9999;
 }

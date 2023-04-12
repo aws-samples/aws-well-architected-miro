@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { RegionSelect } from '../../Components'
 import { useNavigate, useLoaderData } from 'react-router-dom'
-import { setAppData, WATOOL_WORKLOADS_REGION } from '../../Services'
+import { setAppData, WATOOL_WORKLOADS_REGION, WATOOL_IS_AUTHORIZE } from '../../Services'
 
 interface WorkloadsLoaderData {
     workloadsRegion: string
@@ -16,6 +16,11 @@ export const ChooseWorkloadsRegionPage = () => {
         await setAppData(WATOOL_WORKLOADS_REGION, region)
         navigate('/workloads')
     }
+    const toAuthorization = async () => {
+        await setAppData(WATOOL_IS_AUTHORIZE, false)
+        navigate('/')
+    }
+
     return (
         <div className="grid top">
             <RegionSelect
@@ -29,6 +34,13 @@ export const ChooseWorkloadsRegionPage = () => {
                 onClick={getNewWorkloads}
             >
                 Get Workloads
+            </button>
+            <button
+                className="button button-secondary cs1 ce12"
+                type="button"
+                onClick={toAuthorization}
+            >
+                Re-Authorize
             </button>
         </div>
     )

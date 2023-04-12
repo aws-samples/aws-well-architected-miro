@@ -4,9 +4,6 @@ import './assets/style.css'
 import { createHashRouter, redirect, RouterProvider } from 'react-router-dom'
 import {
     getAppData,
-    getToken,
-    getWorkload,
-    getWorkloadList,
     WATOOL_IS_AUTHORIZE,
     WATOOL_WORKLOADS_REGION,
     WATOOL_DEFAULT_REGION,
@@ -52,42 +49,18 @@ export const router = createHashRouter([
     },
     {
         path: 'workloads',
-        loader: async () => {
-            const watoolWorkloadsRegion: string = await getAppData(
-                WATOOL_WORKLOADS_REGION
-            )
-            const token = await getToken()
-            const workloadsList = await getWorkloadList(
-                watoolWorkloadsRegion,
-                token
-            )
-            return {
-                region: watoolWorkloadsRegion,
-                workloadsList,
-            }
-        },
         element: <WorkloadsPage />,
     },
     {
         path: 'workloads/:id',
         loader: async ({ params }) => {
-            if (!params.id) {
+            const workloadId = params.id
+            if (!workloadId) {
                 return redirect('/workloads')
             }
-            const watoolWorkloadsRegion: string = await getAppData(
-                WATOOL_WORKLOADS_REGION
-            )
-            const token = await getToken()
-            const workload = await getWorkload(
-                watoolWorkloadsRegion,
-                token,
-                params.id
-            )
 
             return {
-                region: watoolWorkloadsRegion,
-                workload,
-                token,
+                workloadId
             }
         },
         element: <LensesPage />,

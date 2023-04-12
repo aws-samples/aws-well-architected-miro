@@ -11,7 +11,8 @@
     "mirotone": "3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.6.1"
+    "react-router-dom": "^6.6.1",
+    "react-loader-spinner": "^5.3.4"
   },
   "devDependencies": {
     "@mirohq/websdk-types": "latest",

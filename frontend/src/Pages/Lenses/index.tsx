@@ -1,12 +1,10 @@
-import { Back, createAnswerCards, LensCard, Risk } from '../../Components'
-import React from 'react'
+import { Back, createAnswerCards, LensCard, Risk, SplashScreen } from '../../Components'
+import React, {useEffect, useState} from 'react'
 import { useLoaderData } from 'react-router-dom'
-import { getAnswers } from '../../Services'
+import {getAnswers, getAppData, getToken, getWorkload, WATOOL_WORKLOADS_REGION} from '../../Services'
 
 interface LensesLoaderData {
-    region: string
-    workload: Workload
-    token: string
+    workloadId: string
 }
 
 interface Workload {
@@ -20,29 +18,56 @@ interface Workload {
     Environment: string
     WorkloadId: string
 }
-export function LensesPage() {
+
+
+export const LensesPage = () => {
+    const [workload, setWorkload] = useState({} as Workload);
+    const [isLoading, setIsLoading] = useState(true);
+    const [region, setRegion] = useState('');
+    const [token, setToken] = useState('');
+
     const loaderData = useLoaderData() as LensesLoaderData
-    const region = loaderData.region
-    const workload = loaderData.workload
-    const token = loaderData.token
+    const workloadId = loaderData.workloadId
+
+    useEffect(() => {
+        const dataFetch = async () => {
+            const watoolWorkloadsRegion: string = await getAppData(
+                WATOOL_WORKLOADS_REGION
+            )
+            setRegion(watoolWorkloadsRegion)
+            const token = await getToken()
+            setToken(token)
+            const workload = await getWorkload(
+                watoolWorkloadsRegion,
+                token,
+                workloadId
+            )
+            setWorkload(workload);
+            setIsLoading(false);
+        }
+        dataFetch()
+    }, [])
 
     const highlighter = (string: string) => {
         return <span style={{ fontWeight: 'bolder' }}>{string}</span>
     }
 
     const getAnswersForLens = async (lens: string) => {
+        setIsLoading(true)
         const answers = await getAnswers(
             region,
             token,
-            workload.WorkloadId,
+            workloadId,
             lens
         )
         await createAnswerCards(answers)
+        setIsLoading(false)
     }
 
     return (
         <div>
             <Back to="/workloads" />
+            {isLoading && <SplashScreen />}
             <div className="grid">
                 <div className="cs1 ce12 watool-header">
                     {workload.WorkloadName}
@@ -58,7 +83,7 @@ export function LensesPage() {
                     workload.
                 </div>
                 <div className="cs1 ce12 ">
-                    {Object.keys(workload.RiskCounts).map((key, index) => {
+                    {isLoading ? null : Object.keys(workload.RiskCounts).map((key, index) => {
                         return (
                             <Risk
                                 risk={key}
@@ -71,7 +96,7 @@ export function LensesPage() {
                 <div className="cs1 ce12">
                     You can click on a lens to generate card on your Miro board.
                 </div>
-                {workload.Lenses.map((lens, index) => (
+                {isLoading ? null : workload.Lenses.map((lens, index) => (
                     <div
                         className="cs1 ce12"
                         onClick={() => getAnswersForLens(lens)}
