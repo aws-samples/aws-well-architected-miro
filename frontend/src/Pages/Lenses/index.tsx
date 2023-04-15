@@ -1,7 +1,7 @@
-import { Back, createAnswerCards, LensCard, Risk, SplashScreen } from '../../Components'
+import { Back, createRiskItemCards, LensCard, Risk, SplashScreen } from '../../Components'
 import React, {useEffect, useState} from 'react'
 import { useLoaderData } from 'react-router-dom'
-import {getAnswers, getAppData, getToken, getWorkload, WATOOL_WORKLOADS_REGION} from '../../Services'
+import {getAppData, getRiskItems, getToken, getWorkload, WATOOL_WORKLOADS_REGION} from '../../Services'
 
 interface LensesLoaderData {
     workloadId: string
@@ -25,11 +25,13 @@ export const LensesPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [region, setRegion] = useState('');
     const [token, setToken] = useState('');
+    const [loadingTitle, setLoadingTitle] = useState('')
 
     const loaderData = useLoaderData() as LensesLoaderData
     const workloadId = loaderData.workloadId
 
     useEffect(() => {
+        setLoadingTitle('Lens')
         const dataFetch = async () => {
             const watoolWorkloadsRegion: string = await getAppData(
                 WATOOL_WORKLOADS_REGION
@@ -52,22 +54,23 @@ export const LensesPage = () => {
         return <span style={{ fontWeight: 'bolder' }}>{string}</span>
     }
 
-    const getAnswersForLens = async (lens: string) => {
+    const getRiskItemsForLens = async (lens: string) => {
+        setLoadingTitle('Risk Items')
         setIsLoading(true)
-        const answers = await getAnswers(
+        const riskItems = await getRiskItems(
             region,
             token,
             workloadId,
             lens
         )
-        await createAnswerCards(answers)
+        await createRiskItemCards(riskItems)
         setIsLoading(false)
     }
 
     return (
         <div>
             <Back to="/workloads" />
-            {isLoading && <SplashScreen />}
+            {isLoading && <SplashScreen text={loadingTitle}/>}
             <div className="grid">
                 <div className="cs1 ce12 watool-header">
                     {workload.WorkloadName}
@@ -83,14 +86,16 @@ export const LensesPage = () => {
                     workload.
                 </div>
                 <div className="cs1 ce12 ">
-                    {isLoading ? null : Object.keys(workload.RiskCounts).map((key, index) => {
-                        return (
-                            <Risk
-                                risk={key}
-                                riskCount={workload.RiskCounts[key]}
-                                index={index}
-                            />
-                        )
+                    {isLoading ? null : Object.keys(workload.RiskCounts)
+                        .filter((risk) => risk === 'MEDIUM' || risk === 'HIGH')
+                        .map((risk, index) => {
+                            return (
+                                <Risk
+                                    risk={risk}
+                                    riskCount={workload.RiskCounts[risk]}
+                                    index={index}
+                                />
+                            )
                     })}
                 </div>
                 <div className="cs1 ce12">
@@ -98,8 +103,8 @@ export const LensesPage = () => {
                 </div>
                 {isLoading ? null : workload.Lenses.map((lens, index) => (
                     <div
-                        className="cs1 ce12"
-                        onClick={() => getAnswersForLens(lens)}
+                        className="cs1 ce12 truncate"
+                        onClick={() => getRiskItemsForLens(lens)}
                     >
                         <LensCard lensName={lens} key={index} />
                     </div>

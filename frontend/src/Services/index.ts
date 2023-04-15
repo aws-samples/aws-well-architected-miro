@@ -1,5 +1,5 @@
 export { AWS_REGIONS } from './AWSRegions'
-export { getAnswers, getWorkloadList, getWorkload, onBoard } from './API'
+export { getRiskItems, getWorkloadList, getWorkload, onBoard } from './API'
 export {
     WATOOL_ENDPOINT,
     WATOOL_WORKLOADS_REGION,
@@ -10,5 +10,4 @@ export {
     getAppData,
     getToken,
 } from './App'
-export { getDeploymentLink } from './Deployment'
 export type { WorkloadsList } from './API'

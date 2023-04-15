@@ -1,10 +1,13 @@
 import React from 'react';
 import {ColorRing} from 'react-loader-spinner';
 
-export const SplashScreen = () => {
+interface SplashScreenProps {
+    text: string;
+}
+export const SplashScreen = (props: SplashScreenProps) => {
     return (
         <div className="splash-screen">
-            <h2>Exporting answers...{' '}</h2>
+            <h2>{`Exporting ${props.text}... `}</h2>
             <div className="cs5 ce12">
                 <ColorRing
                     visible={true}

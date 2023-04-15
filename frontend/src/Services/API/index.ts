@@ -28,7 +28,7 @@ export const getWorkloadList = async (region: string, token: string) => {
     return await response.json()
 }
 
-export const getAnswers = async (
+export const getRiskItems = async (
     region: string,
     token: string,
     workloadId: string,

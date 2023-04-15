@@ -19,13 +19,15 @@ export const WorkloadCard = ({
             <div className="cs1 ce11 grid">
                 <div className="cs1 ce12">
                     {lenses.map((lens: string, index: number) => (
-                        <span className="label label-info mgr-5px" key={index}>
+                        <span className="label label-info mgr-5px truncate" key={index}>
                             {lens}
                         </span>
                     ))}
                 </div>
                 <div className="cs1 ce12">
-                    {Object.keys(riskCounts).map((key, index) => {
+                    {Object.keys(riskCounts)
+                        .filter((key) => key === 'MEDIUM' || key === 'HIGH')
+                        .map((key, index) => {
                         return (
                             <Risk
                                 risk={key}

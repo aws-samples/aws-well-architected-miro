@@ -38,7 +38,7 @@ export const WorkloadsPage = () => {
     return (
         <div className="grid top">
             <Back to="/chooseWorkloads" />
-            {isLoading && <SplashScreen />}
+            {isLoading && <SplashScreen text={'Workloads'}/>}
             <div className="cs1 ce12">
                 This is a list of Well-Architected workloads in your AWS account
                 at {highlightRegion(region)}. You can click on a workload to see
