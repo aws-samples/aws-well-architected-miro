@@ -1,43 +1,26 @@
 import React from 'react'
-import { Risk } from '../Risk'
+import {LensForWorkloadList} from "../../Services";
 
 interface WorkloadCardProps {
-    workloadName: string
-    lenses: string[]
-    riskCounts: {
-        [key: string]: number
-    }
+    name: string
+    lenses: LensForWorkloadList[]
+    description: string
 }
-export const WorkloadCard = ({
-    workloadName,
-    lenses,
-    riskCounts,
-}: WorkloadCardProps) => {
+
+export const WorkloadCard = ({name, lenses, description}: WorkloadCardProps) => {
     return (
         <div className="app-card grid mouse-pointer">
-            <h1 className="app-card--title cs1 ce11">{workloadName}</h1>
+            <h1 className="app-card--title cs1 ce11">{name}</h1>
             <div className="cs1 ce11 grid">
                 <div className="cs1 ce12">
-                    {lenses.map((lens: string, index: number) => (
+                    {lenses.map((lens, index: number) => (
                         <span className="label label-info mgr-5px truncate" key={index}>
-                            {lens}
+                            {lens.name}
                         </span>
                     ))}
                 </div>
-                <div className="cs1 ce12">
-                    {Object.keys(riskCounts)
-                        .filter((key) => key === 'MEDIUM' || key === 'HIGH')
-                        .map((key, index) => {
-                        return (
-                            <Risk
-                                risk={key}
-                                riskCount={riskCounts[key]}
-                                index={index}
-                            />
-                        )
-                    })}
-                </div>
             </div>
+            <div className="cs1 ce11">{description}</div>
             <div
                 className="cs12 centered"
                 style={{ gridRowStart: 1, gridRowEnd: 3 }}

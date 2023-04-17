@@ -39,7 +39,7 @@ export class WatExporterStack extends cdk.Stack {
       })
       fn_wl_list.addToRolePolicy(
           new aws_iam.PolicyStatement({
-              actions: ["wellarchitected:ListWorkloads"],
+              actions: ["wellarchitected:ListWorkloads", "wellarchitected:ListLenses", "wellarchitected:GetWorkload"],
               resources: ['*'],
           })
       )
@@ -54,7 +54,7 @@ export class WatExporterStack extends cdk.Stack {
       })
       fn_wl.addToRolePolicy(
           new aws_iam.PolicyStatement({
-              actions: ["wellarchitected:GetWorkload"],
+              actions: ["wellarchitected:GetWorkload", "wellarchitected:ListLenses"],
               resources: ['*'],
           })
       )

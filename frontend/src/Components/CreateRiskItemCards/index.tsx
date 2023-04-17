@@ -47,12 +47,18 @@ const createStickies = async (
             rotation: 0.0,
             taskStatus: 'to-do',
         })
+        // it is an issue with the miro api that we can't zoom to more than ~50 cards at once. 50 in this case is a magic number
         if(index < 50){
             cardStackTill50.push(card)
+            if(riskItems.length === index + 1){
+                Promise.all(cardStackTill50)
+                    // @ts-ignore
+                    .then(async (cards) => { await miro.board.viewport.zoomTo(cards.slice(0, 10));})
+            }
         }else if(index == 50) {
             Promise.all(cardStackTill50)
                 // @ts-ignore
-                .then(async (cards) => { await miro.board.viewport.zoomTo(cards.slice(0, 20));})
+                .then(async (cards) => { await miro.board.viewport.zoomTo(cards.slice(0, 10));})
         }else {
             cardStackRest.push(card)
         }

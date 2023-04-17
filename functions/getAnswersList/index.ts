@@ -38,8 +38,12 @@ const buildRiskItems = (answers) => {
 
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
     const region = event.pathParameters.region
-    const LensAlias = event.pathParameters.lens
     const WorkloadId = event.pathParameters.workloadId
+    let LensAlias = event.pathParameters.lens
+    if(LensAlias.split('_')[0] === 'custom'){
+        LensAlias = LensAlias.split('_').slice(1).join('/')
+    }
+
     const client = new WellArchitectedClient({region, customUserAgent: 'APN_1808755'});
     const riskItems = await paging(client, {LensAlias, WorkloadId})
     return {

@@ -4,8 +4,7 @@ import {Back, WorkloadCard, SplashScreen} from '../../Components'
 import {WorkloadsList, getWorkloadList, getAppData, WATOOL_WORKLOADS_REGION, getToken} from '../../Services'
 
 export const WorkloadsPage = () => {
-
-    const [WorkloadsList, setWorkloadsList] = useState([] as WorkloadsList[]);
+    const [workloads, setWorkloads] = useState([] as WorkloadsList[]);
     const [isLoading, setIsLoading] = useState(true);
     const [region, setRegion] = useState('');
 
@@ -23,7 +22,7 @@ export const WorkloadsPage = () => {
             )
 
             // set state when the data received
-            setWorkloadsList(workloadsList);
+            setWorkloads(workloadsList);
             setIsLoading(false);
         };
 
@@ -44,17 +43,17 @@ export const WorkloadsPage = () => {
                 at {highlightRegion(region)}. You can click on a workload to see
                 more details.
             </div>
-                {isLoading ? null : WorkloadsList.map(
-                    ({ WorkloadName, Lenses, RiskCounts, WorkloadId }, index) => (
+                {isLoading ? null : workloads.map(
+                    ({ name, lenses, id, description }, index) => (
                         <div
                             className="cs1 ce12"
-                            onClick={() => navigate(`/workloads/${WorkloadId}`)}
+                            onClick={() => navigate(`/workloads/${id}`)}
                         >
                             <WorkloadCard
-                                workloadName={WorkloadName}
+                                name={name}
                                 key={index}
-                                lenses={Lenses}
-                                riskCounts={RiskCounts}
+                                lenses={lenses}
+                                description={description}
                             />
                         </div>
                     )

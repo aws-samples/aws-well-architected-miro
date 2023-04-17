@@ -1,4 +1,4 @@
-import { Back, createRiskItemCards, LensCard, Risk, SplashScreen } from '../../Components'
+import { Back, createRiskItemCards, LensCard, SplashScreen } from '../../Components'
 import React, {useEffect, useState} from 'react'
 import { useLoaderData } from 'react-router-dom'
 import {getAppData, getRiskItems, getToken, getWorkload, WATOOL_WORKLOADS_REGION} from '../../Services'
@@ -8,15 +8,18 @@ interface LensesLoaderData {
 }
 
 interface Workload {
-    WorkloadName: string
-    Description: string
-    Lenses: string[]
-    RiskCounts: {
-        [key: string]: number
-    }
-    ReviewOwner: string
-    Environment: string
-    WorkloadId: string
+    name: string
+    description: string
+    lenses: Lens[]
+    reviewOwner: string
+    environment: string
+    id: string
+}
+
+interface Lens {
+    name: string
+    alias: string
+    description: string
 }
 
 
@@ -73,40 +76,27 @@ export const LensesPage = () => {
             {isLoading && <SplashScreen text={loadingTitle}/>}
             <div className="grid">
                 <div className="cs1 ce12 watool-header">
-                    {workload.WorkloadName}
+                    {workload.name}
                 </div>
                 <div className="cs1 ce12">
                     <span className="label label-info mgr-5px">
-                        {workload.Environment}
+                        {workload.environment}
                     </span>
                 </div>
-                <div className="cs1 ce12">{workload.Description}</div>
+                <div className="cs1 ce12">{workload.description}</div>
                 <div className="cs1 ce12">
-                    {highlighter(workload.ReviewOwner)} is the owner of this
+                    {highlighter(workload.reviewOwner)} is the owner of this
                     workload.
-                </div>
-                <div className="cs1 ce12 ">
-                    {isLoading ? null : Object.keys(workload.RiskCounts)
-                        .filter((risk) => risk === 'MEDIUM' || risk === 'HIGH')
-                        .map((risk, index) => {
-                            return (
-                                <Risk
-                                    risk={risk}
-                                    riskCount={workload.RiskCounts[risk]}
-                                    index={index}
-                                />
-                            )
-                    })}
                 </div>
                 <div className="cs1 ce12">
                     You can click on a lens to generate card on your Miro board.
                 </div>
-                {isLoading ? null : workload.Lenses.map((lens, index) => (
+                {isLoading ? null : workload.lenses.map((lens, index) => (
                     <div
-                        className="cs1 ce12 truncate"
-                        onClick={() => getRiskItemsForLens(lens)}
+                        className="cs1 ce12 grid"
+                        onClick={() => getRiskItemsForLens(lens.alias)}
                     >
-                        <LensCard lensName={lens} key={index} />
+                        <LensCard name={lens.name} description={lens.description} key={index} />
                     </div>
                 ))}
             </div>

@@ -1,20 +1,18 @@
 import { WATOOL_DEFAULT_REGION } from '../'
 
 export interface WorkloadsList {
-    WorkloadName: string
-    ImprovementStatus: string
-    Lenses: string[]
-    Owner: string
-    RiskCounts: {
-        NONE: number
-        MEDIUM: number
-        NOT_APPLICABLE: number
-        HIGH: number
-        LOW?: number
-    }
-    UpdatedAt: string
-    WorkloadArn: string
-    WorkloadId: string
+    name: string
+    lenses: LensForWorkloadList[]
+    id: string
+    description: string
+}
+
+export interface LensForWorkloadList {
+    name: string
+}
+
+export interface Workload {
+
 }
 export const getWorkloadList = async (region: string, token: string) => {
     const config = {

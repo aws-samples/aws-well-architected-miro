@@ -10,4 +10,4 @@ export {
     getAppData,
     getToken,
 } from './App'
-export type { WorkloadsList } from './API'
+export type { WorkloadsList, LensForWorkloadList } from './API'
