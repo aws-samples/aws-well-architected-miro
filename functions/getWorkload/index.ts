@@ -20,7 +20,14 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
         environment: workloadResponse.Workload.Environment,
         reviewOwner: workloadResponse.Workload.ReviewOwner,
         description: workloadResponse.Workload.Description,
-        lenses: listLensesResponse.LensSummaries.map(lens => {
+        lenses: listLensesResponse.LensSummaries
+            .filter((lens) => {
+                if(lens.LensType === 'CUSTOM_SELF' || lens.LensType === 'CUSTOM_SHARED'){
+                    return workloadResponse.Workload.Lenses.includes(lens.LensArn)
+                }
+                return workloadResponse.Workload.Lenses.includes(lens.LensAlias)
+            })
+            .map(lens => {
             let alias = lens.LensAlias
             if(lens.LensType === 'CUSTOM_SELF' || lens.LensType === 'CUSTOM_SHARED'){
                 alias = `custom_${lens.LensArn.replace('/', '_')}`

@@ -7,6 +7,8 @@ export const WorkloadsPage = () => {
     const [workloads, setWorkloads] = useState([] as WorkloadsList[]);
     const [isLoading, setIsLoading] = useState(true);
     const [region, setRegion] = useState('');
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         // fetch data
@@ -20,6 +22,11 @@ export const WorkloadsPage = () => {
                 watoolWorkloadsRegion,
                 token
             )
+            if(workloadsList.error) {
+                setError(true);
+                setErrorMessage(workloadsList.error);
+                setIsLoading(false);
+            }
 
             // set state when the data received
             setWorkloads(workloadsList);
@@ -43,7 +50,7 @@ export const WorkloadsPage = () => {
                 at {highlightRegion(region)}. You can click on a workload to see
                 more details.
             </div>
-                {isLoading ? null : workloads.map(
+                {isLoading ? null : error ? <div className="cs1 ce12 error-message">{errorMessage}</div> : workloads.map(
                     ({ name, lenses, id, description }, index) => (
                         <div
                             className="cs1 ce12"

@@ -93,7 +93,7 @@ export const LensesPage = () => {
                 </div>
                 {isLoading ? null : workload.lenses.map((lens, index) => (
                     <div
-                        className="cs1 ce12 grid"
+                        className="cs1 ce12"
                         onClick={() => getRiskItemsForLens(lens.alias)}
                     >
                         <LensCard name={lens.name} description={lens.description} key={index} />
