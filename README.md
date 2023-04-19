@@ -52,6 +52,7 @@ To begin integrating WATool with the Miro application, follow these steps to dep
       - Run `cdk deploy --require-approval never`
    2. Build and push Lambda functions images to ECR:
       - Navigate to `project_root/cdk/docker` folder
+      - Run `sudo chmod +x ecr_login_build_push.sh` to add execution permission
       - Run `./ecr_login_build_push.sh` script
    3. Deploy WAT exporter CDK stack to the target account:
       - Navigate to `project_root/cdk/exporter` folder
