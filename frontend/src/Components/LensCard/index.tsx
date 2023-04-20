@@ -12,7 +12,10 @@ export const LensCard = ({ name, description }: LensCardProps) => {
                 className="cs12 centered"
                 style={{ gridRowStart: 1, gridRowEnd: 3 }}
             >
-                <image className="icon icon-arrow-right" style={{cursor: "inherit"}}></image>
+                <image
+                    className="icon icon-arrow-right"
+                    style={{ cursor: 'inherit' }}
+                ></image>
             </div>
         </div>
     )

@@ -11,9 +11,6 @@ export interface LensForWorkloadList {
     name: string
 }
 
-export interface Workload {
-
-}
 export const getWorkloadList = async (region: string, token: string) => {
     const config = {
         method: 'GET',

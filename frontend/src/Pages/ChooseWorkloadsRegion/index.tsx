@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {Back, RegionSelect} from '../../Components'
+import { RegionSelect } from '../../Components'
 import { useNavigate, useLoaderData } from 'react-router-dom'
 import { setAppData, WATOOL_WORKLOADS_REGION } from '../../Services'
 
@@ -19,7 +19,6 @@ export const ChooseWorkloadsRegionPage = () => {
 
     return (
         <div>
-            <Back to="/" />
             <div className="grid top">
                 <RegionSelect
                     setRegion={setRegion}

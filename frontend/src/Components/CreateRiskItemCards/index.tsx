@@ -1,7 +1,7 @@
 interface RiskItem {
-    title: string,
-    description: string,
-    risk: string,
+    title: string
+    description: string
+    risk: string
 }
 const createStickies = async (
     xStart: number,
@@ -25,7 +25,7 @@ const createStickies = async (
             xOffset = xStart
         }
 
-        let themeColour;
+        let themeColour
         if (riskItem.risk == 'HIGH') {
             themeColour = '#f16c7f'
         }
@@ -48,18 +48,21 @@ const createStickies = async (
             taskStatus: 'to-do',
         })
         // it is an issue with the miro api that we can't zoom to more than ~50 cards at once. 50 in this case is a magic number
-        if(index < 50){
+        if (index < 50) {
             cardStackTill50.push(card)
-            if(riskItems.length === index + 1){
-                Promise.all(cardStackTill50)
+            if (riskItems.length === index + 1) {
+                Promise.all(cardStackTill50).then(async (cards) => {
                     // @ts-ignore
-                    .then(async (cards) => { await miro.board.viewport.zoomTo(cards.slice(0, 10));})
+                    await miro.board.viewport.zoomTo(cards.slice(0, 10))
+                })
             }
-        }else if(index == 50) {
+        } else if (index == 50) {
             Promise.all(cardStackTill50)
-                // @ts-ignore
-                .then(async (cards) => { await miro.board.viewport.zoomTo(cards.slice(0, 10));})
-        }else {
+                .then(async (cards) => {
+                    // @ts-ignore
+                    await miro.board.viewport.zoomTo(cards.slice(0, 10))
+                })
+        } else {
             cardStackRest.push(card)
         }
         xOffset = xOffset + stickyWidth

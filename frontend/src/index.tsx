@@ -60,7 +60,7 @@ export const router = createHashRouter([
             }
 
             return {
-                workloadId
+                workloadId,
             }
         },
         element: <LensesPage />,
