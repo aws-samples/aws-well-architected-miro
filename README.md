@@ -82,4 +82,4 @@ To begin integrating WATool with the Miro application, follow these steps to dep
 
 ## License
 
-his sample code is made available under the MIT-0 license. See the LICENSE file.
+This sample code is made available under the MIT-0 license. See the LICENSE file.
