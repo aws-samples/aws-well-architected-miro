@@ -5,6 +5,7 @@
     "main": "index.js",
     "scripts": {
         "build": "esbuild index.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
+        "predeploy": "sudo chmod +x ecr_login_build_push.sh",
         "deploy": "./ecr_login_build_push.sh"
     },
     "author": "",
