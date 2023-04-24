@@ -51,19 +51,7 @@ To begin integrating WATool with the Miro application, follow these steps to dep
 4. Docker buildx is required to build Lambda images. It could be either used from [Docker Desktop](https://www.docker.com/products/docker-desktop/) package - no need in steps 4.i and 4.ii in this case; or installed separately (steps below developed and tested on [AWS Cloud9](https://aws.amazon.com/cloud9/)):
    1. [Binary installation manual](https://docs.docker.com/build/install-buildx/)
    2. To enable multiarch building capability launch `docker run --rm --privileged multiarch/qemu-user-static --reset -p yes`
-5. Run `sudo chmod +x docker/ecr_login_build_push.sh` to add execution permission
-6. For easy deployment just run `npm run deploy` from the project root folder. This will deploy all the necessary stacks in the target account.
-7. If you want to deploy the stacks separately, follow the steps below:
-    1. Deploy Lambdas hosting CDK stack to the target account:
-        - Navigate to `project_root/hosting` folder
-        - Run `cdk deploy --require-approval never`
-    2. Build and push Lambda functions images to ECR:
-        - Navigate to `project_root/docker` folder
-        - Run `sudo chmod +x ecr_login_build_push.sh` to add execution permission
-        - Run `./ecr_login_build_push.sh` script
-    3. Deploy WAT exporter CDK stack to the target account:
-        - Navigate to `project_root/exporter` folder
-        - Run `cdk deploy --require-approval never`
+5. For easy deployment just run `npm run deploy` from the project root folder. This will deploy all the necessary stacks in the target account.
 
 ### Miro Application
 
