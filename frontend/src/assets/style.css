@@ -1,0 +1,105 @@
+@import 'mirotone/dist/styles.css';
+
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+    max-height: 100%;
+    overflow: auto;
+}
+
+html {
+    height: 100%;
+    background-color: #eee;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+        BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans,
+        sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol,
+        Noto Color Emoji;
+}
+
+body {
+    height: 100%;
+    line-height: 1.5;
+    margin: 0;
+    padding: 2rem;
+}
+
+img {
+    max-width: 100%;
+}
+
+.button {
+    text-decoration: none;
+}
+
+.pdt-1 {
+    padding: 1rem;
+}
+
+.pdb-1 {
+    padding-bottom: 1rem;
+}
+
+.pdl-0 {
+    padding-left: 0;
+}
+.mgl-5px {
+    margin-left: 5px;
+}
+.mgr-5px {
+    margin-right: 5px;
+}
+.mgb-1 {
+    margin-bottom: 1rem;
+}
+.mgb-half {
+    margin-bottom: 0.5rem;
+}
+.error-message {
+    background: red;
+    padding: 1em;
+    color: white;
+}
+.watool-header {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xlarge);
+}
+.mouse-pointer {
+    cursor: pointer;
+}
+
+.mouse-pointer:hover {
+    background-color: rgba(181, 186, 181, 0.1);
+}
+
+.mouse-pointer:active {
+    background-color: rgba(181, 186, 181, 0.2);
+    transform: translateY(1px);
+}
+.watool-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.truncate {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 1);
+    z-index: 9999;
+}

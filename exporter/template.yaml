@@ -1,0 +1,942 @@
+Resources:
+  WorkflowsListFunctionServiceRoleE28887A4:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: WatExporterStack/WorkflowsListFunction/ServiceRole/Resource
+  WorkflowsListFunctionServiceRoleDefaultPolicy36E1E73A:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: wellarchitected:*
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: WorkflowsListFunctionServiceRoleDefaultPolicy36E1E73A
+      Roles:
+        - Ref: WorkflowsListFunctionServiceRoleE28887A4
+    Metadata:
+      aws:cdk:path: WatExporterStack/WorkflowsListFunction/ServiceRole/DefaultPolicy/Resource
+  WorkflowsListFunction8F8D5F81:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ImageUri:
+          Fn::Join:
+            - ""
+            - - 711697081313.dkr.ecr.eu-central-1.
+              - Ref: AWS::URLSuffix
+              - /getworkflowlist:latest
+      Role:
+        Fn::GetAtt:
+          - WorkflowsListFunctionServiceRoleE28887A4
+          - Arn
+      Architectures:
+        - arm64
+      FunctionName: WorkflowsListFunction
+      PackageType: Image
+    DependsOn:
+      - WorkflowsListFunctionServiceRoleDefaultPolicy36E1E73A
+      - WorkflowsListFunctionServiceRoleE28887A4
+    Metadata:
+      aws:cdk:path: WatExporterStack/WorkflowsListFunction/Resource
+  WorkflowFunctionServiceRole7444ED13:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: WatExporterStack/WorkflowFunction/ServiceRole/Resource
+  WorkflowFunctionServiceRoleDefaultPolicy3260C7E7:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: wellarchitected:*
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: WorkflowFunctionServiceRoleDefaultPolicy3260C7E7
+      Roles:
+        - Ref: WorkflowFunctionServiceRole7444ED13
+    Metadata:
+      aws:cdk:path: WatExporterStack/WorkflowFunction/ServiceRole/DefaultPolicy/Resource
+  WorkflowFunction9B932173:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ImageUri:
+          Fn::Join:
+            - ""
+            - - 711697081313.dkr.ecr.eu-central-1.
+              - Ref: AWS::URLSuffix
+              - /getworkflow:latest
+      Role:
+        Fn::GetAtt:
+          - WorkflowFunctionServiceRole7444ED13
+          - Arn
+      Architectures:
+        - arm64
+      FunctionName: WorkflowFunction
+      PackageType: Image
+    DependsOn:
+      - WorkflowFunctionServiceRoleDefaultPolicy3260C7E7
+      - WorkflowFunctionServiceRole7444ED13
+    Metadata:
+      aws:cdk:path: WatExporterStack/WorkflowFunction/Resource
+  UserOnboardFunctionServiceRoleD31BF065:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: WatExporterStack/UserOnboardFunction/ServiceRole/Resource
+  UserOnboardFunctionServiceRoleDefaultPolicyE15224AB:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: ssm:*
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: UserOnboardFunctionServiceRoleDefaultPolicyE15224AB
+      Roles:
+        - Ref: UserOnboardFunctionServiceRoleD31BF065
+    Metadata:
+      aws:cdk:path: WatExporterStack/UserOnboardFunction/ServiceRole/DefaultPolicy/Resource
+  UserOnboardFunctionB26A5A1A:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ImageUri:
+          Fn::Join:
+            - ""
+            - - 711697081313.dkr.ecr.eu-central-1.
+              - Ref: AWS::URLSuffix
+              - /onboard:latest
+      Role:
+        Fn::GetAtt:
+          - UserOnboardFunctionServiceRoleD31BF065
+          - Arn
+      Architectures:
+        - arm64
+      FunctionName: UserOnboardFunction
+      PackageType: Image
+    DependsOn:
+      - UserOnboardFunctionServiceRoleDefaultPolicyE15224AB
+      - UserOnboardFunctionServiceRoleD31BF065
+    Metadata:
+      aws:cdk:path: WatExporterStack/UserOnboardFunction/Resource
+  APIGWauthFunctionServiceRole7D6C52E8:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: WatExporterStack/APIGWauthFunction/ServiceRole/Resource
+  APIGWauthFunctionServiceRoleDefaultPolicy8CC0094C:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: ssm:*
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: APIGWauthFunctionServiceRoleDefaultPolicy8CC0094C
+      Roles:
+        - Ref: APIGWauthFunctionServiceRole7D6C52E8
+    Metadata:
+      aws:cdk:path: WatExporterStack/APIGWauthFunction/ServiceRole/DefaultPolicy/Resource
+  APIGWauthFunction6E814D2D:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ImageUri:
+          Fn::Join:
+            - ""
+            - - 711697081313.dkr.ecr.eu-central-1.
+              - Ref: AWS::URLSuffix
+              - /authorize:latest
+      Role:
+        Fn::GetAtt:
+          - APIGWauthFunctionServiceRole7D6C52E8
+          - Arn
+      Architectures:
+        - arm64
+      FunctionName: APIGWauthFunction
+      PackageType: Image
+    DependsOn:
+      - APIGWauthFunctionServiceRoleDefaultPolicy8CC0094C
+      - APIGWauthFunctionServiceRole7D6C52E8
+    Metadata:
+      aws:cdk:path: WatExporterStack/APIGWauthFunction/Resource
+  AnswersListFunctionServiceRole76519A6E:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: WatExporterStack/AnswersListFunction/ServiceRole/Resource
+  AnswersListFunctionServiceRoleDefaultPolicyEDC926DB:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: wellarchitected:*
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: AnswersListFunctionServiceRoleDefaultPolicyEDC926DB
+      Roles:
+        - Ref: AnswersListFunctionServiceRole76519A6E
+    Metadata:
+      aws:cdk:path: WatExporterStack/AnswersListFunction/ServiceRole/DefaultPolicy/Resource
+  AnswersListFunctionF1D59530:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ImageUri:
+          Fn::Join:
+            - ""
+            - - 711697081313.dkr.ecr.eu-central-1.
+              - Ref: AWS::URLSuffix
+              - /getanswerslist:latest
+      Role:
+        Fn::GetAtt:
+          - AnswersListFunctionServiceRole76519A6E
+          - Arn
+      Architectures:
+        - arm64
+      FunctionName: AnswersListFunction
+      PackageType: Image
+    DependsOn:
+      - AnswersListFunctionServiceRoleDefaultPolicyEDC926DB
+      - AnswersListFunctionServiceRole76519A6E
+    Metadata:
+      aws:cdk:path: WatExporterStack/AnswersListFunction/Resource
+  ApiGateway11E7F47B:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: BackendGateway
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Resource
+  ApiGatewayDeploymentA26796E8d0acf81a55c0cf53fde79789df0f27d4:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+      Description: Automatically created by the RestApi construct
+    DependsOn:
+      - ApiGatewayregiongetanswersworkloadIdlenslensGETBF4C43BA
+      - ApiGatewayregiongetanswersworkloadIdlenslensOPTIONSF781F0D2
+      - ApiGatewayregiongetanswersworkloadIdlenslensE7859953
+      - ApiGatewayregiongetanswersworkloadIdlens893BC503
+      - ApiGatewayregiongetanswersworkloadId2BB0013A
+      - ApiGatewayregiongetanswers49121C1E
+      - ApiGatewayregiongetwllistGET4CC959E4
+      - ApiGatewayregiongetwllistOPTIONS005CEF61
+      - ApiGatewayregiongetwllistCF21AB81
+      - ApiGatewayregiongetwlworkloadIdGETCAEE7293
+      - ApiGatewayregiongetwlworkloadIdOPTIONSEE5054F1
+      - ApiGatewayregiongetwlworkloadId2BA97668
+      - ApiGatewayregiongetwl06A12055
+      - ApiGatewayregiononboardOPTIONS0918545E
+      - ApiGatewayregiononboardPOST73805A22
+      - ApiGatewayregiononboard042B82B9
+      - ApiGatewayregion69D16242
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Deployment/Resource
+  ApiGatewayDeploymentStageprod1C6D5CD6:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+      DeploymentId:
+        Ref: ApiGatewayDeploymentA26796E8d0acf81a55c0cf53fde79789df0f27d4
+      StageName: prod
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/DeploymentStage.prod/Resource
+  ApiGatewayregion69D16242:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - ApiGateway11E7F47B
+          - RootResourceId
+      PathPart: "{region}"
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/Resource
+  ApiGatewayregiongetwllistCF21AB81:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: ApiGatewayregion69D16242
+      PathPart: get_wl_list
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_wl_list/Resource
+  ApiGatewayregiongetwllistOPTIONS005CEF61:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: OPTIONS
+      ResourceId:
+        Ref: ApiGatewayregiongetwllistCF21AB81
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+      AuthorizationType: NONE
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_wl_list/OPTIONS/Resource
+  ApiGatewayregiongetwllistGETApiPermissionWatExporterStackApiGateway9D9B60BDGETregiongetwllist1610D889:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - WorkflowsListFunction8F8D5F81
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: ApiGateway11E7F47B
+            - /
+            - Ref: ApiGatewayDeploymentStageprod1C6D5CD6
+            - /GET/*/get_wl_list
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_wl_list/GET/ApiPermission.WatExporterStackApiGateway9D9B60BD.GET..{region}.get_wl_list
+  ApiGatewayregiongetwllistGETApiPermissionTestWatExporterStackApiGateway9D9B60BDGETregiongetwllist050BB8CA:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - WorkflowsListFunction8F8D5F81
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: ApiGateway11E7F47B
+            - /test-invoke-stage/GET/*/get_wl_list
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_wl_list/GET/ApiPermission.Test.WatExporterStackApiGateway9D9B60BD.GET..{region}.get_wl_list
+  ApiGatewayregiongetwllistGET4CC959E4:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: GET
+      ResourceId:
+        Ref: ApiGatewayregiongetwllistCF21AB81
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - WorkflowsListFunction8F8D5F81
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_wl_list/GET/Resource
+  ApiGatewayregiongetwl06A12055:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: ApiGatewayregion69D16242
+      PathPart: get_wl
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_wl/Resource
+  ApiGatewayregiongetwlworkloadId2BA97668:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: ApiGatewayregiongetwl06A12055
+      PathPart: "{workloadId}"
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_wl/{workloadId}/Resource
+  ApiGatewayregiongetwlworkloadIdOPTIONSEE5054F1:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: OPTIONS
+      ResourceId:
+        Ref: ApiGatewayregiongetwlworkloadId2BA97668
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+      AuthorizationType: NONE
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_wl/{workloadId}/OPTIONS/Resource
+  ApiGatewayregiongetwlworkloadIdGETApiPermissionWatExporterStackApiGateway9D9B60BDGETregiongetwlworkloadId3BE25684:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - WorkflowFunction9B932173
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: ApiGateway11E7F47B
+            - /
+            - Ref: ApiGatewayDeploymentStageprod1C6D5CD6
+            - /GET/*/get_wl/*
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_wl/{workloadId}/GET/ApiPermission.WatExporterStackApiGateway9D9B60BD.GET..{region}.get_wl.{workloadId}
+  ApiGatewayregiongetwlworkloadIdGETApiPermissionTestWatExporterStackApiGateway9D9B60BDGETregiongetwlworkloadIdF1700C57:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - WorkflowFunction9B932173
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: ApiGateway11E7F47B
+            - /test-invoke-stage/GET/*/get_wl/*
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_wl/{workloadId}/GET/ApiPermission.Test.WatExporterStackApiGateway9D9B60BD.GET..{region}.get_wl.{workloadId}
+  ApiGatewayregiongetwlworkloadIdGETCAEE7293:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: GET
+      ResourceId:
+        Ref: ApiGatewayregiongetwlworkloadId2BA97668
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - WorkflowFunction9B932173
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_wl/{workloadId}/GET/Resource
+  ApiGatewayregiononboard042B82B9:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: ApiGatewayregion69D16242
+      PathPart: onboard
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/onboard/Resource
+  ApiGatewayregiononboardOPTIONS0918545E:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: OPTIONS
+      ResourceId:
+        Ref: ApiGatewayregiononboard042B82B9
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+      AuthorizationType: NONE
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/onboard/OPTIONS/Resource
+  ApiGatewayregiononboardPOSTApiPermissionWatExporterStackApiGateway9D9B60BDPOSTregiononboard2B3E7EDE:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - UserOnboardFunctionB26A5A1A
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: ApiGateway11E7F47B
+            - /
+            - Ref: ApiGatewayDeploymentStageprod1C6D5CD6
+            - /POST/*/onboard
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/onboard/POST/ApiPermission.WatExporterStackApiGateway9D9B60BD.POST..{region}.onboard
+  ApiGatewayregiononboardPOSTApiPermissionTestWatExporterStackApiGateway9D9B60BDPOSTregiononboard7DAB235A:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - UserOnboardFunctionB26A5A1A
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: ApiGateway11E7F47B
+            - /test-invoke-stage/POST/*/onboard
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/onboard/POST/ApiPermission.Test.WatExporterStackApiGateway9D9B60BD.POST..{region}.onboard
+  ApiGatewayregiononboardPOST73805A22:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: POST
+      ResourceId:
+        Ref: ApiGatewayregiononboard042B82B9
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - UserOnboardFunctionB26A5A1A
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/onboard/POST/Resource
+  ApiGatewayregiongetanswers49121C1E:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: ApiGatewayregion69D16242
+      PathPart: get_answers
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_answers/Resource
+  ApiGatewayregiongetanswersworkloadId2BB0013A:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: ApiGatewayregiongetanswers49121C1E
+      PathPart: "{workloadId}"
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_answers/{workloadId}/Resource
+  ApiGatewayregiongetanswersworkloadIdlens893BC503:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: ApiGatewayregiongetanswersworkloadId2BB0013A
+      PathPart: lens
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_answers/{workloadId}/lens/Resource
+  ApiGatewayregiongetanswersworkloadIdlenslensE7859953:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: ApiGatewayregiongetanswersworkloadIdlens893BC503
+      PathPart: "{lens}"
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_answers/{workloadId}/lens/{lens}/Resource
+  ApiGatewayregiongetanswersworkloadIdlenslensOPTIONSF781F0D2:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: OPTIONS
+      ResourceId:
+        Ref: ApiGatewayregiongetanswersworkloadIdlenslensE7859953
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+      AuthorizationType: NONE
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+            StatusCode: "204"
+        RequestTemplates:
+          application/json: "{ statusCode: 200 }"
+        Type: MOCK
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
+            method.response.header.Access-Control-Allow-Methods: true
+          StatusCode: "204"
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_answers/{workloadId}/lens/{lens}/OPTIONS/Resource
+  ApiGatewayregiongetanswersworkloadIdlenslensGETApiPermissionWatExporterStackApiGateway9D9B60BDGETregiongetanswersworkloadIdlenslens5E72349C:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - AnswersListFunctionF1D59530
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: ApiGateway11E7F47B
+            - /
+            - Ref: ApiGatewayDeploymentStageprod1C6D5CD6
+            - /GET/*/get_answers/*/lens/*
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_answers/{workloadId}/lens/{lens}/GET/ApiPermission.WatExporterStackApiGateway9D9B60BD.GET..{region}.get_answers.{workloadId}.lens.{lens}
+  ApiGatewayregiongetanswersworkloadIdlenslensGETApiPermissionTestWatExporterStackApiGateway9D9B60BDGETregiongetanswersworkloadIdlenslens39CEF603:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - AnswersListFunctionF1D59530
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: ApiGateway11E7F47B
+            - /test-invoke-stage/GET/*/get_answers/*/lens/*
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_answers/{workloadId}/lens/{lens}/GET/ApiPermission.Test.WatExporterStackApiGateway9D9B60BD.GET..{region}.get_answers.{workloadId}.lens.{lens}
+  ApiGatewayregiongetanswersworkloadIdlenslensGETBF4C43BA:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: GET
+      ResourceId:
+        Ref: ApiGatewayregiongetanswersworkloadIdlenslensE7859953
+      RestApiId:
+        Ref: ApiGateway11E7F47B
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - AnswersListFunctionF1D59530
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: WatExporterStack/ApiGateway/Default/{region}/get_answers/{workloadId}/lens/{lens}/GET/Resource
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAA/1WQQU4DMQxFz8I+E9pKSGyhiB2iGg5QuYkpbpM4SpxWo9HcnUymSGXl97+/LNsb/bTSqwe45s7Yc+fooMcvAXNW1dqPaJLuMXIm4TS8QkblwB8s6PG9BCPEQW2/wz3vMHnKuapJEXg99uxwbrS6Y0dmaLlGk4JIRxC8wlCjmOUlUkvf8A2j48FjkNm9U3XLY5u7QM1zSQbbjn/iNmjhD5QftrO10DTN/FkkFvkXrLzlYEnaDYEt6lN+vKyf9XpTf3XKRF0qQcij7pf6C9TBEepHAQAA
+    Metadata:
+      aws:cdk:path: WatExporterStack/CDKMetadata/Default
+    Condition: CDKMetadataAvailable
+Outputs:
+  ApiGatewayEndpoint5AA8EC3A:
+    Value:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: ApiGateway11E7F47B
+          - .execute-api.
+          - Ref: AWS::Region
+          - "."
+          - Ref: AWS::URLSuffix
+          - /
+          - Ref: ApiGatewayDeploymentStageprod1C6D5CD6
+          - /
+Conditions:
+  CDKMetadataAvailable:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - af-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-northwest-1
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - sa-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-2
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-2
+Parameters:
+  BootstrapVersion:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /cdk-bootstrap/hnb659fds/version
+    Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
+Rules:
+  CheckBootstrapVersion:
+    Assertions:
+      - Assert:
+          Fn::Not:
+            - Fn::Contains:
+                - - "1"
+                  - "2"
+                  - "3"
+                  - "4"
+                  - "5"
+                - Ref: BootstrapVersion
+        AssertDescription: CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.
+
+https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/create/review?stackName=WatExporter&templateURL=https://d2uk2ie60blu6d.cloudfront.net/template.yaml
+
+https://eu-central-1:
+  console:
+    aws:
+      amazon:
+        com/cloudformation/home?region=eu-central-1#/stacks/quickcreate?templateURL=https%3A%2F%2Fboard-wat-integration-app-frankfurt:
+          s3:
+            eu-central-1:
+              amazonaws:
+                com%2Ftemplate:
+                  yaml&stackName=WatExporter&param_BootstrapVersion=%2Fcdk-bootstrap%2Fhnb659fds%2Fversion:https://eu-central-1.console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/quickcreate?templateURL=https%3A%2F%2Fboard-wat-integration-app-frankfurt.s3.eu-central-1.amazonaws.com%2Ftemplate.yaml&stackName=WatExporter&param_BootstrapVersion=%2Fcdk-bootstrap%2Fhnb659fds%2Fversion
+
+
+
+  https://eu-central-1.console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/quickcreate?templateURL=https%3A%2F%2Fboard-wat-integration-app-frankfurt.s3.eu-central-1.amazonaws.com%2Ftemplate.yaml&stackName=WatExporter&param_BootstrapVersion=%2Fcdk-bootstrap%2Fhnb659fds%2Fversion
