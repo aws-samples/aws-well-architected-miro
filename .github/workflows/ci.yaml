@@ -1,0 +1,43 @@
+name: Docker
+
+on:
+  push:
+    branches: [ Migrate_ecr_to_ghcr ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        function: [authorize, getAnswersList, getWorkload, getWorkloadList, onBoard]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Convert function name to lowercase
+        run: echo "IMAGE_NAME=$(echo ${{matrix.function}} | awk '{print tolower($0)}')" >> $GITHUB_ENV
+
+      - name: Copy function
+        run: cp ./functions/${{ matrix.function }}/index.ts .
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Remove index.ts
+        run: rm index.ts
