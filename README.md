@@ -2,6 +2,21 @@
 
 The Well-Architected Integration application is an integrated Miro application that provides access to the Well-Architected Tool for obtaining workloads, lenses, and answers. The application exports answers to a Miro board for team collaboration and tracking.
 
+## Workflow overview
+
+This integration let you import Well-Architected High/Medium risk items (HRIs) to Miro board as Miro
+cards. Cards then could be used to improve interaction along risk mitigation discussion.
+
+- Organize cards with one of the project management templates from Miroverse
+(https://miro.com/miroverse/project-management/ ), for instance Kanban board.
+- Collaborate in a hybrid workplace (https://miro.com/blog/hybrid-collaboration-field-guide/ ).
+- Distribute tasks between team members, prioritize, define project deadlines, mention your team
+- members, uncover fun of visual online collaboration.
+- Use existing integrations with Jira to create task directly from the board based on HRI card, no
+more copy-pasting.
+
+![Well-Architected Tool integration workflow](./media/workflow-demo.gif)
+
 ## Stack
 
 Summary of the current stack:
