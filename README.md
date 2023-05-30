@@ -15,7 +15,7 @@ cards. Cards then could be used to improve interaction along risk mitigation dis
 - Use existing integrations with Jira to create task directly from the board based on HRI card, no
 more copy-pasting.
 
-![Well-Architected Tool integration workflow](./media/workflow-demo.gif)
+![Well-Architected Tool integration workflow](./media/well-archtected-risk-miro-app.gif)
 
 ## Stack
 
