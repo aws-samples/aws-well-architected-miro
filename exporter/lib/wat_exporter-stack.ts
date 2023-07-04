@@ -8,6 +8,7 @@ import {
     aws_lambda,
     aws_s3,
     aws_s3_deployment,
+	aws_ssm,
     Duration,
 } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
@@ -17,10 +18,17 @@ export class WatExporterStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props)
 
+		//SSM parameter to store Miro Team ID
+		const miro_team_ssm = new aws_ssm.StringParameter(this, 'MiroTeamID', {
+			parameterName: 'miroTeam',
+			stringValue: ''
+		})
+
         //Bucket for assets
         const assets_bucket = new aws_s3.Bucket(this, 'AssetsBucket', {
             autoDeleteObjects: true,
             removalPolicy: cdk.RemovalPolicy.DESTROY,
+			enforceSSL: true
         })
 
         //Provision data in assets S3 bucket
@@ -106,15 +114,9 @@ export class WatExporterStack extends cdk.Stack {
                 handler: aws_lambda.Handler.FROM_IMAGE,
             }
         )
-        fn_user_onboard.addToRolePolicy(
-            new aws_iam.PolicyStatement({
-                actions: [
-                    'ssm:PutParameter',
-                    'ssm:GetParameter'
-                ],
-                resources: ['*'], //TODO: Replace with fine-grained access to particular parameter
-            })
-        )
+
+		//Permissions for onboarding function to write Miro Team ID value to SSM Parameter
+		miro_team_ssm.grantWrite(fn_user_onboard)
 
         //API GW authorizer function and permissions to get parameters from Parameter Store
         const fn_apigw_auth = new aws_lambda.Function(
@@ -134,12 +136,9 @@ export class WatExporterStack extends cdk.Stack {
                 handler: aws_lambda.Handler.FROM_IMAGE,
             }
         )
-        fn_apigw_auth.addToRolePolicy(
-            new aws_iam.PolicyStatement({
-                actions: ['ssm:GetParameter'],
-                resources: ['*'], //TODO: Replace with fine-grained access to particular parameter
-            })
-        )
+
+		//Permissions for auth function to read Miro Team ID value from SSM Parameter
+		miro_team_ssm.grantRead(fn_apigw_auth)
 
         //Get Well Architected Tool answers for workload
         const fn_answers = new aws_lambda.Function(
