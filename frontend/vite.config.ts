@@ -3,6 +3,7 @@ import fs from 'fs'
 import dns from 'dns'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import sri from 'rollup-plugin-sri'
 
 // https://vitejs.dev/config/server-options.html#server-host
 dns.setDefaultResultOrder('verbatim')
@@ -24,7 +25,10 @@ export default defineConfig({
             input: allHtmlEntries,
         },
     },
-    plugins: [react()],
+    plugins: [react(),{
+        enforce: "post",
+        ...sri({ publicPath: "/" })
+    }],
     server: {
         port: 3000,
     },
