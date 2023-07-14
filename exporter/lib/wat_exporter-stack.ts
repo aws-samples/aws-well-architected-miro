@@ -9,10 +9,13 @@ import {
     aws_s3,
     aws_s3_deployment,
 	aws_ssm,
+	aws_logs,
     Duration,
 } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
 import * as path from 'path'
+
+//TODO: Divide CDK code into modules
 
 export class WatExporterStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -24,12 +27,20 @@ export class WatExporterStack extends cdk.Stack {
 			stringValue: ''
 		})
 
-        //Bucket for assets
-        const assets_bucket = new aws_s3.Bucket(this, 'AssetsBucket', {
-            autoDeleteObjects: true,
-            removalPolicy: cdk.RemovalPolicy.DESTROY,
+		//Bucket for access logs
+		const log_bucket = new aws_s3.Bucket(this, 'LogBucket', {
+			removalPolicy: cdk.RemovalPolicy.RETAIN,
 			enforceSSL: true
-        })
+		});
+
+		//Bucket for assets
+		const assets_bucket = new aws_s3.Bucket(this, 'AssetsBucket', {
+			autoDeleteObjects: true,
+			removalPolicy: cdk.RemovalPolicy.DESTROY,
+			enforceSSL: true,
+			serverAccessLogsBucket: log_bucket,
+			serverAccessLogsPrefix: 'assetsbucket/'
+		});
 
         //Provision data in assets S3 bucket
         new aws_s3_deployment.BucketDeployment(this, 'BucketDeployment', {
@@ -168,12 +179,22 @@ export class WatExporterStack extends cdk.Stack {
             })
         )
 
+		//Log group for API Gateway
+		const api_log_group = new aws_logs.LogGroup(this, 'ApiGwLogs', {
+			logGroupName: 'aws-well-architected-miro/apigw/BackendGateway',
+			retention: aws_logs.RetentionDays.ONE_MONTH
+		})
+
         //API Gateway
         const api_gw = new aws_apigateway.RestApi(this, 'ApiGateway', {
             restApiName: 'BackendGateway',
             endpointConfiguration: {
                 types: [aws_apigateway.EndpointType.REGIONAL],
             },
+			deployOptions: {
+				accessLogDestination: new aws_apigateway.LogGroupLogDestination(api_log_group),
+				accessLogFormat: aws_apigateway.AccessLogFormat.jsonWithStandardFields()
+			}
         })
         //Create API GW root path with region
         const rs_region = api_gw.root.addResource('api').addResource('{region}')
@@ -235,6 +256,10 @@ export class WatExporterStack extends cdk.Stack {
             this,
             'CfDistribution',
             {
+				enableLogging: true,
+				logBucket: log_bucket,
+				logIncludesCookies: true,
+				logFilePrefix: 'cloudfront/',
                 defaultRootObject: 'index.html',
                 defaultBehavior: {
                     origin: new aws_cloudfront_origins.S3Origin(assets_bucket),
