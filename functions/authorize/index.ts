@@ -25,6 +25,8 @@ export const handler = async (
 ): Promise<APIGatewayAuthorizerResult> => {
     const region = process.env.AWS_REGION
     const Name = 'miroTeam'
+    console.log('event.resource: ', event.resource)
+    console.log('event.resource === `/api/${region}/onboard` ', event.resource === `/api/${region}/onboard`)
 
     const client = new SSMClient({ region })
 
@@ -33,27 +35,49 @@ export const handler = async (
     })
     const parameter: GetParameterCommandOutput = await client.send(command)
 
-    const jwtToken: string = event.headers['Authorization'].split(' ')[1]
+    if (event.headers) {
+        const authHeader = event.headers["Authorization"] ?? "";
+        const headerParts = authHeader.split(" ");
+        if (headerParts.length === 2) {
+            try {
+                const jwtToken: string = authHeader.split(" ")[1];
+                let decoded = decode(jwtToken, {
+                    issuer: "miro",
+                    algorithms: ["HS256"],
+                    complete: true,
+                    json: true,
+                }) as MiroJwtToken;
 
-    const jwsDecoded = decode(jwtToken, {
-        complete: true,
-        json: true,
-    }) as MiroJwtToken
-    const miroTeamFromJwt = JSON.stringify(jwsDecoded?.payload.team)
-    const miroTeamFromParameter = JSON.stringify(parameter.Parameter.Value)
+                const miroTeamFromJwt = JSON.stringify(decoded?.payload.team)
+                const miroTeamFromParameter = JSON.stringify(parameter.Parameter.Value)
 
-    return {
-        principalId: 'user',
+                if(miroTeamFromJwt === miroTeamFromParameter){
+                    return generatePolicy("user", "Allow", event.methodArn);
+                }
+
+                if(event.resource === `/api/${region}/onboard` && miroTeamFromJwt && !miroTeamFromParameter){
+                    return generatePolicy("user", "Allow", event.methodArn);
+                }
+
+            } catch (err) {
+                return generatePolicy("user", "Deny", event.methodArn);
+            }
+        }
+    }
+
+    return generatePolicy("user", "Deny", event.methodArn);
+}
+
+function generatePolicy(principalId: string, effect: string, resource: string) {
+    return  {
+        principalId: principalId,
         policyDocument: {
-            Version: '2012-10-17',
+            Version: "2012-10-17",
             Statement: [
                 {
-                    Action: 'execute-api:Invoke',
-                    Effect:
-                        miroTeamFromJwt === miroTeamFromParameter
-                            ? 'Allow'
-                            : 'Deny',
-                    Resource: event.methodArn,
+                    Action: "execute-api:Invoke",
+                    Effect: effect,
+                    Resource: resource,
                 },
             ],
         },

@@ -8,8 +8,8 @@ import {
     aws_lambda,
     aws_s3,
     aws_s3_deployment,
-	aws_ssm,
-	aws_logs,
+	  aws_ssm,
+	  aws_logs,
     Duration,
 } from 'aws-cdk-lib'
 import { Construct } from 'constructs'
@@ -27,129 +27,129 @@ export class WatExporterStack extends cdk.Stack {
 			stringValue: ''
 		})
 
-		//Bucket for access logs
-		const log_bucket = new aws_s3.Bucket(this, 'LogBucket', {
-			removalPolicy: cdk.RemovalPolicy.RETAIN,
-			enforceSSL: true
-		});
+    //Bucket for access logs
+    const log_bucket = new aws_s3.Bucket(this, 'LogBucket', {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      enforceSSL: true
+    });
 
-		//Bucket for assets
-		const assets_bucket = new aws_s3.Bucket(this, 'AssetsBucket', {
-			autoDeleteObjects: true,
-			removalPolicy: cdk.RemovalPolicy.DESTROY,
-			enforceSSL: true,
-			serverAccessLogsBucket: log_bucket,
-			serverAccessLogsPrefix: 'assetsbucket/'
-		});
+    //Bucket for assets
+    const assets_bucket = new aws_s3.Bucket(this, 'AssetsBucket', {
+      autoDeleteObjects: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      enforceSSL: true,
+      serverAccessLogsBucket: log_bucket,
+      serverAccessLogsPrefix: 'assetsbucket/'
+    });
 
-        //Provision data in assets S3 bucket
-        new aws_s3_deployment.BucketDeployment(this, 'BucketDeployment', {
-            sources: [
-                aws_s3_deployment.Source.asset(
-                    path.join(__dirname, '../../frontend/dist')
-                ),
-            ],
-            destinationBucket: assets_bucket,
-        })
+    //Provision data in assets S3 bucket
+    new aws_s3_deployment.BucketDeployment(this, 'BucketDeployment', {
+        sources: [
+            aws_s3_deployment.Source.asset(
+                path.join(__dirname, '../../frontend/dist')
+            ),
+        ],
+        destinationBucket: assets_bucket,
+    })
 
-        //TODO: Extract functions and API resources from single data source, iterate over functions, permissions and resources
+    //TODO: Extract functions and API resources from single data source, iterate over functions, permissions and resources
 
-        //Get list of the Well-Architected Tool workloads function and permissions to WAT
-        const fn_wl_list = new aws_lambda.Function(
-            this,
-            'WorkloadListFunction',
-            {
-                functionName: 'WorkloadListFunction',
-                runtime: aws_lambda.Runtime.FROM_IMAGE,
-                architecture: aws_lambda.Architecture.ARM_64,
-                code: aws_lambda.Code.fromEcrImage(
-                    aws_ecr.Repository.fromRepositoryName(
-                        this,
-                        'repoWorkloadList',
-                        `getworkloadlist`
-                    )
-                ),
-                handler: aws_lambda.Handler.FROM_IMAGE,
-            }
-        )
-        fn_wl_list.addToRolePolicy(
-            new aws_iam.PolicyStatement({
-                actions: [
-                    'wellarchitected:ListWorkloads',
-                    'wellarchitected:ListLenses',
-                    'wellarchitected:GetWorkload',
-                ],
-                resources: ['*'],
-            })
-        )
-
-        //Get Well Architected Tool workload content function and permissions to WAT
-        const fn_wl = new aws_lambda.Function(this, 'WorkloadFunction', {
-            functionName: 'WorkloadFunction',
+    //Get list of the Well-Architected Tool workloads function and permissions to WAT
+    const fn_wl_list = new aws_lambda.Function(
+        this,
+        'WorkloadListFunction',
+        {
+            functionName: 'WorkloadListFunction',
             runtime: aws_lambda.Runtime.FROM_IMAGE,
             architecture: aws_lambda.Architecture.ARM_64,
             code: aws_lambda.Code.fromEcrImage(
                 aws_ecr.Repository.fromRepositoryName(
                     this,
-                    'repoWorkload',
-                    `getworkload`
+                    'repoWorkloadList',
+                    `getworkloadlist`
                 )
             ),
             handler: aws_lambda.Handler.FROM_IMAGE,
+        }
+    )
+    fn_wl_list.addToRolePolicy(
+        new aws_iam.PolicyStatement({
+            actions: [
+                'wellarchitected:ListWorkloads',
+                'wellarchitected:ListLenses',
+                'wellarchitected:GetWorkload',
+            ],
+            resources: ['*'],
         })
-        fn_wl.addToRolePolicy(
-            new aws_iam.PolicyStatement({
-                actions: [
-                    'wellarchitected:GetWorkload',
-                    'wellarchitected:ListLenses',
-                ],
-                resources: ['*'],
-            })
-        )
+    )
 
-        //Onboard backend user function and permissions to put parameters to Systems Manager Parameter Store
-        const fn_user_onboard = new aws_lambda.Function(
-            this,
-            'UserOnboardFunction',
-            {
-                functionName: 'UserOnboardFunction',
-                runtime: aws_lambda.Runtime.FROM_IMAGE,
-                architecture: aws_lambda.Architecture.ARM_64,
-                code: aws_lambda.Code.fromEcrImage(
-                    aws_ecr.Repository.fromRepositoryName(
-                        this,
-                        'repoUserOnboard',
-                        `onboard`
-                    )
-                ),
-                handler: aws_lambda.Handler.FROM_IMAGE,
-            }
-        )
+    //Get Well Architected Tool workload content function and permissions to WAT
+    const fn_wl = new aws_lambda.Function(this, 'WorkloadFunction', {
+        functionName: 'WorkloadFunction',
+        runtime: aws_lambda.Runtime.FROM_IMAGE,
+        architecture: aws_lambda.Architecture.ARM_64,
+        code: aws_lambda.Code.fromEcrImage(
+            aws_ecr.Repository.fromRepositoryName(
+                this,
+                'repoWorkload',
+                `getworkload`
+            )
+        ),
+        handler: aws_lambda.Handler.FROM_IMAGE,
+    })
+    fn_wl.addToRolePolicy(
+        new aws_iam.PolicyStatement({
+            actions: [
+                'wellarchitected:GetWorkload',
+                'wellarchitected:ListLenses',
+            ],
+            resources: ['*'],
+        })
+    )
 
-		//Permissions for onboarding function to write Miro Team ID value to SSM Parameter
-		miro_team_ssm.grantWrite(fn_user_onboard)
+    //Onboard backend user function and permissions to put parameters to Systems Manager Parameter Store
+    const fn_user_onboard = new aws_lambda.Function(
+        this,
+        'UserOnboardFunction',
+        {
+            functionName: 'UserOnboardFunction',
+            runtime: aws_lambda.Runtime.FROM_IMAGE,
+            architecture: aws_lambda.Architecture.ARM_64,
+            code: aws_lambda.Code.fromEcrImage(
+                aws_ecr.Repository.fromRepositoryName(
+                    this,
+                    'repoUserOnboard',
+                    `onboard`
+                )
+            ),
+            handler: aws_lambda.Handler.FROM_IMAGE,
+        }
+    )
 
-        //API GW authorizer function and permissions to get parameters from Parameter Store
-        const fn_apigw_auth = new aws_lambda.Function(
-            this,
-            'APIGWauthFunction',
-            {
-                functionName: 'APIGWauthFunction',
-                runtime: aws_lambda.Runtime.FROM_IMAGE,
-                architecture: aws_lambda.Architecture.ARM_64,
-                code: aws_lambda.Code.fromEcrImage(
-                    aws_ecr.Repository.fromRepositoryName(
-                        this,
-                        'repoApiGwAuth',
-                        `authorize`
-                    )
-                ),
-                handler: aws_lambda.Handler.FROM_IMAGE,
-            }
-        )
+  //Permissions for onboarding function to write Miro Team ID value to SSM Parameter
+  miro_team_ssm.grantWrite(fn_user_onboard)
 
-		//Permissions for auth function to read Miro Team ID value from SSM Parameter
-		miro_team_ssm.grantRead(fn_apigw_auth)
+      //API GW authorizer function and permissions to get parameters from Parameter Store
+      const fn_apigw_auth = new aws_lambda.Function(
+          this,
+          'APIGWauthFunction',
+          {
+              functionName: 'APIGWauthFunction',
+              runtime: aws_lambda.Runtime.FROM_IMAGE,
+              architecture: aws_lambda.Architecture.ARM_64,
+              code: aws_lambda.Code.fromEcrImage(
+                  aws_ecr.Repository.fromRepositoryName(
+                      this,
+                      'repoApiGwAuth',
+                      `authorize`
+                  )
+              ),
+              handler: aws_lambda.Handler.FROM_IMAGE,
+          }
+      )
+
+		  //Permissions for auth function to read Miro Team ID value from SSM Parameter
+		    miro_team_ssm.grantRead(fn_apigw_auth)
 
         //Get Well Architected Tool answers for workload
         const fn_answers = new aws_lambda.Function(
@@ -179,11 +179,11 @@ export class WatExporterStack extends cdk.Stack {
             })
         )
 
-		//Log group for API Gateway
-		const api_log_group = new aws_logs.LogGroup(this, 'ApiGwLogs', {
-			logGroupName: 'aws-well-architected-miro/apigw/BackendGateway',
-			retention: aws_logs.RetentionDays.ONE_MONTH
-		})
+        //Log group for API Gateway
+        const api_log_group = new aws_logs.LogGroup(this, 'ApiGwLogs', {
+          logGroupName: 'aws-well-architected-miro/apigw/BackendGateway',
+          retention: aws_logs.RetentionDays.ONE_MONTH
+        })
 
         //API Gateway
         const api_gw = new aws_apigateway.RestApi(this, 'ApiGateway', {
