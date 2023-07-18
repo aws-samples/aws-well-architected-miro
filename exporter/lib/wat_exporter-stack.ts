@@ -191,10 +191,11 @@ export class WatExporterStack extends cdk.Stack {
             endpointConfiguration: {
                 types: [aws_apigateway.EndpointType.REGIONAL],
             },
-			deployOptions: {
-				accessLogDestination: new aws_apigateway.LogGroupLogDestination(api_log_group),
-				accessLogFormat: aws_apigateway.AccessLogFormat.jsonWithStandardFields()
-			}
+			      deployOptions: {
+				      accessLogDestination: new aws_apigateway.LogGroupLogDestination(api_log_group),
+				      accessLogFormat: aws_apigateway.AccessLogFormat.jsonWithStandardFields()
+			      },
+			      cloudWatchRole: true
         })
         //Create API GW root path with region
         const rs_region = api_gw.root.addResource('api').addResource('{region}')
