@@ -3,37 +3,29 @@ import {
     APIGatewayAuthorizerResult,
     APIGatewayRequestAuthorizerEvent,
 } from 'aws-lambda'
-import {
-    SSMClient,
-    GetParameterCommand,
-    GetParameterCommandOutput,
-} from '@aws-sdk/client-ssm'
-import { decode, Jwt, JwtPayload } from 'jsonwebtoken'
+import { GetSecretValueCommand, SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
+import { verify} from 'jsonwebtoken'
 
-interface MiroJwtToken extends Jwt {
-    payload: MiroJwtTokenPayload
-}
+const region = process.env.AWS_REGION;
+const secretId = process.env.SECRET_ID;
+const client = new SecretsManagerClient({ region });
 
-interface MiroJwtTokenPayload extends JwtPayload {
-    team: string // ID of the Miro team that the JWT is assigned to
-    user: string //ID of the Miro user that the JWT is assigned to
-}
-
+let clientSecret: string | null = null;
 export const handler = async (
     event: APIGatewayRequestAuthorizerEvent,
     context: Context
 ): Promise<APIGatewayAuthorizerResult> => {
-    const region = process.env.AWS_REGION
-    const Name = 'miroTeam'
-    console.log('event.resource: ', event.resource)
-    console.log('event.resource === `/api/${region}/onboard` ', event.resource === `/api/${region}/onboard`)
+    if (clientSecret === null) {
+        const command = new GetSecretValueCommand({
+            SecretId: secretId,
+        });
 
-    const client = new SSMClient({ region })
-
-    const command = new GetParameterCommand({
-        Name,
-    })
-    const parameter: GetParameterCommandOutput = await client.send(command)
+        const response = await client.send(command);
+        if (response.SecretString) {
+            const secretJson = JSON.parse(response.SecretString);
+            clientSecret = secretJson.clientSecret;
+        }
+    }
 
     if (event.headers) {
         const authHeader = event.headers["Authorization"] ?? "";
@@ -41,24 +33,13 @@ export const handler = async (
         if (headerParts.length === 2) {
             try {
                 const jwtToken: string = authHeader.split(" ")[1];
-                let decoded = decode(jwtToken, {
+                let decoded = verify(jwtToken, clientSecret ?? "", {
                     issuer: "miro",
                     algorithms: ["HS256"],
-                    complete: true,
-                    json: true,
-                }) as MiroJwtToken;
+                }) ;
 
-                const miroTeamFromJwt = JSON.stringify(decoded?.payload.team)
-                const miroTeamFromParameter = JSON.stringify(parameter.Parameter.Value)
-
-                if(miroTeamFromJwt === miroTeamFromParameter){
-                    return generatePolicy("user", "Allow", event.methodArn);
-                }
-
-                if(event.resource === `/api/${region}/onboard` && miroTeamFromJwt && !miroTeamFromParameter){
-                    return generatePolicy("user", "Allow", event.methodArn);
-                }
-
+                console.log(decoded);
+                return generatePolicy("user", "Allow", event.methodArn);
             } catch (err) {
                 return generatePolicy("user", "Deny", event.methodArn);
             }
