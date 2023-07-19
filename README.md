@@ -47,7 +47,6 @@ Summary of the current stack:
 
 1. AWS account with access to create
     - [IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)
-    - [ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html) repositories
     - [Lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html)
     - [API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html) endpoints
     - [S3 buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html)

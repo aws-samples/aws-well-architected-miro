@@ -1,5 +1,3 @@
-import { WATOOL_DEFAULT_REGION } from '../'
-
 export interface WorkloadsList {
     name: string
     lenses: LensForWorkloadList[]
@@ -19,7 +17,7 @@ export const getWorkloadList = async (region: string, token: string) => {
         },
     }
 
-    const response = await fetch(`/api/${region}/get_wl_list`, config)
+    const response = await fetch(`/api/${region}/get-workloads-list`, config)
     return await response.json()
 }
 
@@ -37,7 +35,7 @@ export const getRiskItems = async (
     }
 
     const response = await fetch(
-        `/api/${region}/get_answers/${workloadId}/lens/${lens}`,
+        `/api/${region}/get-answers/${workloadId}/lens/${lens}`,
         config
     )
     return await response.json()
@@ -55,19 +53,9 @@ export const getWorkload = async (
         },
     }
 
-    const response = await fetch(`/api/${region}/get_wl/${workloadId}`, config)
-    return await response.json()
-}
-
-export const onBoard = async (token: string) => {
-    const region = WATOOL_DEFAULT_REGION
-    const config = {
-        method: 'POST',
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    }
-
-    const response = await fetch(`/api/${region}/onboard`, config)
+    const response = await fetch(
+        `/api/${region}/get-workload/${workloadId}`,
+        config
+    )
     return await response.json()
 }
