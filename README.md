@@ -60,12 +60,13 @@ Summary of the current stack:
 To begin integrating WATool with the Miro application, follow these steps to deploy infrastructure in your AWS account:
 
 1. Configure CLI access to AWS account via [profile](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html) or [environment variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html)
-2. Export AWS_REGION environment variable by run `export AWS_REGION='your region here'` (i.e. `export AWS_REGION='eu-north-1'`), as Lambda function deployment script relies on that
-3. Bootstrap CDK stack in the target account: `cdk bootstrap aws://<account_id>/<region>`
-4. Docker buildx is required to build Lambda images. It could be either used from [Docker Desktop](https://www.docker.com/products/docker-desktop/) package - no need in steps 4.i and 4.ii in this case; or installed separately (steps below developed and tested on [AWS Cloud9](https://aws.amazon.com/cloud9/)):
+2. Put your Miro application client secret into `./deployment-config.json` file. You can find it in your Miro application settings page.
+3. Export AWS_REGION environment variable by run `export AWS_REGION='your region here'` (i.e. `export AWS_REGION='eu-north-1'`), as Lambda function deployment script relies on that
+4. Bootstrap CDK stack in the target account: `cdk bootstrap aws://<account_id>/<region>`
+5. Docker buildx is required to build Lambda images. It could be either used from [Docker Desktop](https://www.docker.com/products/docker-desktop/) package - no need in steps 4.i and 4.ii in this case; or installed separately (steps below developed and tested on [AWS Cloud9](https://aws.amazon.com/cloud9/)):
    1. [Binary installation manual](https://docs.docker.com/build/install-buildx/)
    2. To enable multiarch building capability launch `docker run --rm --privileged multiarch/qemu-user-static --reset -p yes`
-5. For easy deployment just run `npm run deploy` from the project root folder. This will deploy all the necessary stacks in the target account.
+6. For easy deployment just run `npm run deploy` from the project root folder. This will deploy all the necessary stacks in the target account.
 
 ### Miro Application
 
