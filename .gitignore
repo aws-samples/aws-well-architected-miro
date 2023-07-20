@@ -1,7 +1,10 @@
-package-lock.json
 node_modules/
 .idea
 .DS_Store
 frontend/node_modules
 frontend/.idea
 npm_audit_report.txt
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out

@@ -4,36 +4,15 @@ import './assets/style.css'
 import { createHashRouter, redirect, RouterProvider } from 'react-router-dom'
 import {
     getAppData,
-    WATOOL_IS_AUTHORIZE,
     WATOOL_WORKLOADS_REGION,
     WATOOL_DEFAULT_REGION,
 } from './Services'
-import {
-    ChooseWorkloadsRegionPage,
-    LensesPage,
-    OnBoardingPage,
-    WorkloadsPage,
-} from './Pages'
+import { ChooseWorkloadsRegionPage, LensesPage, WorkloadsPage } from './Pages'
 
 export const router = createHashRouter([
     {
         path: '/',
         loader: async () => {
-            const isWatoolAuthorize = await getAppData(WATOOL_IS_AUTHORIZE)
-            if (isWatoolAuthorize) {
-                return redirect('/chooseWorkloads')
-            }
-            return {}
-        },
-        element: <OnBoardingPage />,
-    },
-    {
-        path: 'chooseWorkloads',
-        loader: async () => {
-            const isWatoolAuthorize = await getAppData(WATOOL_IS_AUTHORIZE)
-            if (!isWatoolAuthorize) {
-                return redirect('/')
-            }
             const watoolWorkloadsRegion: string = await getAppData(
                 WATOOL_WORKLOADS_REGION
             )
