@@ -29,6 +29,7 @@ export class WellArchitectedExporterStack extends cdk.Stack {
         const logBucket = new aws_s3.Bucket(this, 'LogBucket', {
             removalPolicy: cdk.RemovalPolicy.RETAIN,
             enforceSSL: true,
+			accessControl: aws_s3.BucketAccessControl.LOG_DELIVERY_WRITE
         })
 
         //Bucket for assets
